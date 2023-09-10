@@ -16,15 +16,33 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Reset Encoders", group = "Utilities")
 public class ResetEncoders extends OpMode {
     Robot robot;
+    boolean wheel1Reset = false;
+    boolean wheel2Reset = false;
 
     public void init () {
         robot = new Robot(this, false);
+        robot.initIMU();
     }
 
     public void loop () {
         telemetry.addData("LEFT Module Orientation: ", robot.driveController.moduleLeft.getCurrentOrientation().getAngle());
         telemetry.addData("RIGHT Module Orientation: ", robot.driveController.moduleRight.getCurrentOrientation().getAngle());
         telemetry.update();
+
+        Vector2d joystick1 = new Vector2d(gamepad1.left_stick_x, -gamepad1.left_stick_y); //LEFT joystick
+
+        if(!wheel1Reset && !wheel2Reset) {
+            robot.driveController.moduleLeft.rotateModule(joystick1, false);
+        } else if (!wheel2Reset && wheel1Reset) {
+            robot.driveController.moduleRight.rotateModule(joystick1, false);
+        }
+
+        if(gamepad1.a) {
+            wheel1Reset = true;
+        } else if (gamepad1.b) {
+            wheel2Reset = true;
+        }
+
 
         if (gamepad1.y) {
             robot.driveController.resetEncoders();

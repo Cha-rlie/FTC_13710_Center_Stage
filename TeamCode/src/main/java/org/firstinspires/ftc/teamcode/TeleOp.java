@@ -36,7 +36,7 @@ public class TeleOp extends OpMode {
 
     public void loop() {
         Vector2d joystick1 = new Vector2d(gamepad1.left_stick_x, -gamepad1.left_stick_y); //LEFT joystick
-        Vector2d joystick2 = new Vector2d(gamepad1.right_stick_x, -gamepad2.right_stick_y); //RIGHT joystick
+        Vector2d joystick2 = new Vector2d(gamepad1.right_stick_x, -gamepad1.right_stick_y); //RIGHT joystick
 
         robot.driveController.updateUsingJoysticks(checkDeadband(joystick1), checkDeadband(joystick2));
 
