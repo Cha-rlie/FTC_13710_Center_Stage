@@ -11,7 +11,7 @@ public class DriveController {
     DriveModule moduleLeft;
     DriveModule moduleRight;
 
-    double power = 1; // Uhh was originally 0.1, changed now we'll see what happens
+    double power = 0.1; // Uhh was originally 0.1, changed now we'll see what happens
 
     //used for straight line distance tracking
     double robotDistanceTraveled = 0;

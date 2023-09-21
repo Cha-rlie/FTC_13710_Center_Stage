@@ -31,17 +31,17 @@ public class ResetEncoders extends OpMode {
 
         Vector2d joystick1 = new Vector2d(gamepad1.left_stick_x, -gamepad1.left_stick_y); //LEFT joystick
 
-        if(!wheel1Reset && !wheel2Reset) {
-            robot.driveController.moduleLeft.rotateModule(joystick1, false);
-        } else if (!wheel2Reset && wheel1Reset) {
-            robot.driveController.moduleRight.rotateModule(joystick1, false);
-        }
-
-        if(gamepad1.a) {
-            wheel1Reset = true;
-        } else if (gamepad1.b) {
-            wheel2Reset = true;
-        }
+//        if(!wheel1Reset && !wheel2Reset) {
+//            robot.driveController.moduleLeft.rotateModule(joystick1, false);
+//        } else if (!wheel2Reset && wheel1Reset) {
+//            robot.driveController.moduleRight.rotateModule(joystick1, false);
+//        }
+//
+//        if(gamepad1.a) {
+//            wheel1Reset = true;
+//        } else if (gamepad1.b) {
+//            wheel2Reset = true;
+//        }
 
 
         if (gamepad1.y) {
