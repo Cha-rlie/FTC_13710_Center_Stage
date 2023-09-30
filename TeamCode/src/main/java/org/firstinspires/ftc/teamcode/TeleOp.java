@@ -1,15 +1,24 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.arcrobotics.ftclib.command.CommandBase;
+import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.teamcode.hardware.Robot;
-import org.firstinspires.ftc.teamcode.hardware.Vector2d;
+import org.firstinspires.ftc.teamcode.hardware.intake.Intake;
+import org.firstinspires.ftc.teamcode.hardware.swervedrive.Robot;
+import org.firstinspires.ftc.teamcode.hardware.swervedrive.Vector2d;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Diff Swerve TeleOp", group = "TeleOp")
 
 public class TeleOp extends OpMode {
     Robot robot;
+    GamepadEx gamePad1;
+    GamepadEx gamePad2;
+
+    // Declaring Commands
+    CommandBase intake;
 
     //deadband for joysticks
     public double DEADBAND_MAG = 0.1;
@@ -19,13 +28,21 @@ public class TeleOp extends OpMode {
 
     public void init() {
         robot = new Robot(this, false);
+        gamePad1 = new GamepadEx(gamepad1);
+        gamePad2 = new GamepadEx(gamepad2);
+
+        intake = new Intake(hardwareMap, gamePad1);
+        intake.schedule();
+
+        CommandScheduler.getInstance();
+
     }
 
     //allows driver to indicate that the IMU should not be reset
     //used when starting TeleOp after auto or if program crashes in the middle of match
     //relevant because of field-centric controls
     public void init_loop() {
-        if (gamepad1.y) {
+        if (gamePad1.getButton(GamepadKeys.Button.Y)) {
             willResetIMU = false;
         }
     }
@@ -35,8 +52,8 @@ public class TeleOp extends OpMode {
 
 
     public void loop() {
-        Vector2d joystick1 = new Vector2d(gamepad1.left_stick_x, -gamepad1.left_stick_y); //LEFT joystick
-        Vector2d joystick2 = new Vector2d(gamepad1.right_stick_x, -gamepad1.right_stick_y); //RIGHT joystick
+        Vector2d joystick1 = new Vector2d(gamePad1.getLeftX(), -gamePad1.getLeftY()); //LEFT joystick
+        Vector2d joystick2 = new Vector2d(gamePad1.getRightX(), -gamePad1.getRightY()); //RIGHT joystick
 
         robot.driveController.updateUsingJoysticks(checkDeadband(joystick1), checkDeadband(joystick2));
 
