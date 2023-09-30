@@ -26,12 +26,12 @@ public class DriveModule {
 
     public final double motorPPR = 145.1; // Pulses (ticks) per revolution. Can be found on the manufacturer website
 
-    public final double TICKS_PER_MODULE_REV = (60 / 10) * motorPPR  * 2;
+    public final double TICKS_PER_MODULE_REV = (58 / 12) * motorPPR  * 2;
     public final double DEGREES_PER_TICK = 360/TICKS_PER_MODULE_REV;
 
     //TODO: modify this variable to match drive gear ratio
     //The TICKS_PER_Wheel_REV is the amount of rotations of the input shaft for one rotation on the wheel. Equal to total gear ratio * motorPPR
-    public final double TICKS_PER_WHEEL_REV = 0.555555 * motorPPR; //ticks per WHEEL revolution
+    public final double TICKS_PER_WHEEL_REV = 0.666666666 * motorPPR; //ticks per WHEEL revolution
 
     public final double CM_WHEEL_DIAMETER = 6.3; //TODO: change to match wheel size
     public final double CM_PER_WHEEL_REV = CM_WHEEL_DIAMETER * Math.PI;
