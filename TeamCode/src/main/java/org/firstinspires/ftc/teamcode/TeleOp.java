@@ -2,11 +2,13 @@ package org.firstinspires.ftc.teamcode;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.hardware.intake.Intake;
+import org.firstinspires.ftc.teamcode.hardware.Deposit;
+import org.firstinspires.ftc.teamcode.hardware.Intake;
 import org.firstinspires.ftc.teamcode.hardware.swervedrive.Robot;
 import org.firstinspires.ftc.teamcode.hardware.swervedrive.Vector2d;
 
@@ -18,7 +20,6 @@ public class TeleOp extends OpMode {
     GamepadEx gamePad2;
 
     // Declaring Commands
-    CommandBase intake;
 
     //deadband for joysticks
     public double DEADBAND_MAG = 0.1;
@@ -26,14 +27,13 @@ public class TeleOp extends OpMode {
 
     public boolean willResetIMU = true;
 
+    private Deposit deposit;
+
     public void init() {
         robot = new Robot(this, false);
         gamePad1 = new GamepadEx(gamepad1);
         gamePad2 = new GamepadEx(gamepad2);
-
-        intake = new Intake(hardwareMap, gamePad1);
-        intake.schedule();
-
+        deposit = new Deposit(hardwareMap);
         CommandScheduler.getInstance();
 
     }
@@ -73,6 +73,20 @@ public class TeleOp extends OpMode {
         //to confirm that joysticks are operating properly
         telemetry.addData("Joystick 1", joystick1);
         telemetry.addData("Joystick 2", joystick2);
+
+        // Move the slides Up
+        gamePad2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
+                .whileHeld(new InstantCommand(() -> {
+                    deposit.powerSlides(20);
+                }));
+
+        // Move the slides Down
+        gamePad2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+                .whileHeld(new InstantCommand(() -> {
+                    deposit.powerSlides(-20);
+                }));
+
+
 
         telemetry.update();
     }
