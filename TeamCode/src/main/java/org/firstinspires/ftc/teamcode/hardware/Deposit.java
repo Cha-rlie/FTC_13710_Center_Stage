@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
@@ -15,12 +12,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 public class Deposit extends SubsystemBase {
 
     // Servos
-    ServoEx GS; // Gripper
+    ServoEx Gripper; // Gripper
     ServoEx Wrist; // Wrist
     public ServoEx V4B1; // V4B
     public ServoEx V4B2;
@@ -76,14 +72,14 @@ public class Deposit extends SubsystemBase {
 
     public void grip() {
         if (!gripperState) {
-            GS.rotateByAngle(40);
+            Gripper.rotateByAngle(40);
             gripperState = !gripperState;
         }
     }
 
     public void letGo() {
         if (gripperState) {
-            GS.rotateByAngle(-40);
+            Gripper.rotateByAngle(-40);
             gripperState = !gripperState;
         }
     }
