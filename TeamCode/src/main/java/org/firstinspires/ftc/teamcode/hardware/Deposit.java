@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.hardware.ServoEx;
@@ -7,45 +9,69 @@ import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
+import com.arcrobotics.ftclib.util.Timing.Timer;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 public class Deposit extends SubsystemBase {
 
-    // Declare variables here
     // Servos
-    ServoEx GS; // Gripper Servo
-    ServoEx ZA; // Zombie Axel Servo
-    ServoEx V4B1; // Virtual Four Bar First Servo
-    ServoEx V4B2; // Virtual Four Bar Second Servo
+    ServoEx GS; // Gripper
+    ServoEx Wrist; // Wrist
+    public ServoEx V4B1; // V4B
+    public ServoEx V4B2;
 
     // Slide Motors
-    MotorEx DS1; // Deposit Slide 1
-    MotorEx DS2; // Deposit Slide 2
+    public MotorEx DS1; // Deposit Slide 1
+    public MotorEx DS2; // Deposit Slide 2
 
-    MotorGroup DS; // Deposit Slides
+    public MotorGroup DS; // Deposit Slides
+    // Slide positions
+    int min = 0;
+    int transfer = 200;
+    int max = 1000;
+    int tolerance =  50;
+
 
     // Initialise Safety Variables
     boolean gripperState = false; // Not Gripped
 
     public Deposit(HardwareMap hardwareMap) {
         // Assign variables here with parameters
-        GS = new SimpleServo(hardwareMap, "GS", 0, 360, AngleUnit.DEGREES);
-        ZA = new SimpleServo(hardwareMap, "ZA", 0, 360, AngleUnit.DEGREES);
-        V4B1 = new SimpleServo(hardwareMap, "V4B1", 0, 360, AngleUnit.DEGREES);
-        V4B2 = new SimpleServo(hardwareMap, "V4B2", 0, 360, AngleUnit.DEGREES);
+//        GS = new SimpleServo(hardwareMap, "GS", 0, 360, AngleUnit.DEGREES);
+
 
         DS1 = new MotorEx(hardwareMap, "DS1");
         DS2 = new MotorEx(hardwareMap, "DS2");
         DS2.setInverted(true);
 
+        int MIN_ANGLE = 0;
+        int MAX_ANGLE = 180;
+
+        V4B1 = new SimpleServo(hardwareMap, "V4B1", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
+        V4B2 = new SimpleServo(hardwareMap, "V4B2", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
+        Wrist = new SimpleServo(hardwareMap, "W", 0, 300, AngleUnit.DEGREES);
+
+        V4B1.setInverted(true);
+
+        V4B1.turnToAngle(90);
+        V4B2.turnToAngle(90);
+        Wrist.turnToAngle(0);
+
+        Timer timer = new Timer(2);
+        timer.start();
+
+        while(!timer.done()) {
+        }
+
         DS =  new MotorGroup(DS1, DS2);
         DS.setRunMode(Motor.RunMode.PositionControl);
-        DS.setPositionCoefficient(0.05); //This is just what they had in the docs, but we are supposed to tune it
-        DS.setPositionTolerance(20); // This the allowance for error we are giving the motors
-        DS.resetEncoder();
 
+        resetPosition();
     }
 
     public void grip() {
@@ -62,61 +88,82 @@ public class Deposit extends SubsystemBase {
         }
     }
 
-    public void rotateGripperAngleToPickUp() {
-        ZA.rotateByAngle(90);
+    public void pickUp() {
+        V4B1.turnToAngle(6.4);
+        V4B2.turnToAngle(6.4);
     }
 
-    public void rotateGripperAngleToDeposit()
-    {
-        ZA.rotateByAngle(-90);
+    public void placing() {
+        V4B1.turnToAngle(180);
+        V4B2.turnToAngle(180);
     }
 
-    public void rotateV4BToPickUp() {
-        // Hopefully these move at the same time? I have put a low angle to not break it if not :)
-        V4B1.rotateByAngle(10);
-        V4B2.rotateByAngle(10);
+    public void manualV4BControl(double angle, Telemetry telemetry) {
+        int scaling = 10;
+
+        V4B1.rotateByAngle(-angle  * scaling);
+        V4B2.rotateByAngle(-angle  * scaling);
+
+        telemetry.addData("V4B: ", V4B1.getAngle());
     }
 
-    public void rotateV4BToDeposit() {
-        // Hopefully these move at the same time? I have put a low angle to not break it if not :)
-        V4B1.rotateByAngle(10);
-        V4B2.rotateByAngle(10);
-    }
+    public void resetPosition() {
+//        DS.setRunMode(Motor.RunMode.RawPower);
+//
+//        while(DS1.motorEx.getCurrent(CurrentUnit.AMPS) < 1.5) {
+//            DS.set(0.3);
+//        }
 
-    public void powerSlides(int distanceToMove) { // Free-style
-        DS.setTargetDistance(distanceToMove);
+        DS.resetEncoder();
+        DS1.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        DS2.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        while (!DS.atTargetPosition()) {
-            DS.set(0.5);
-        }
-
+        DS.setRunMode(Motor.RunMode.PositionControl);
         DS.stopMotor();
 
+        // set and get the position coefficient
+        DS.setPositionCoefficient(0.1);
+        double kP = DS.getPositionCoefficient();
+        DS.setPositionTolerance(30);   // allowed maximum error
     }
 
-    public void slidesDown() {
-
-        DS.setTargetPosition(0);
-
+    public void upSlides() {
+        // set the target position
+        DS1.setTargetPosition(max);      // an integer representing
+        // desired tick count
         DS.set(0);
 
-        while (!DS.atTargetPosition()) {
-            DS.set(0.5);
+        if (!DS1.atTargetPosition()) {
+            DS.set(-1);
         }
-
-        DS.stopMotor();
     }
 
-    public void slidesUp() {
-        DS.setTargetPosition(200);
-
+    public void downSlides() {
+        // set the target position
+        DS1.setTargetPosition(min);      // an integer representing
+        // desired tick count
         DS.set(0);
 
-        while (!DS.atTargetPosition()) {
-            DS.set(0.5);
+        if (!DS1.atTargetPosition()) {
+            DS.set(1);
         }
-
-        DS.stopMotor();
     }
 
+    public void moveSlides(Telemetry telemetry) {
+        // set the target position
+        DS1.setTargetPosition(max);      // an integer representing
+        // desired tick count
+        DS.set(0);
+
+        DS.setPositionCoefficient(0.1);
+        double kP = DS.getPositionCoefficient();
+        DS.setPositionTolerance(30);   // allowed maximum error
+
+        // perform the control loop
+        while (!DS1.atTargetPosition()) {
+            DS.set(-1);
+        }
+
+        DS.stopMotor(); // stop the motor
+    }
 }

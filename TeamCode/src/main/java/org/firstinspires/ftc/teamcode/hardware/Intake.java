@@ -18,7 +18,7 @@ public class Intake extends SubsystemBase {
 
     public Intake(HardwareMap hardwareMap, GamepadEx gamepad1) {
         // Initialising the Motors
-        intakeSpinner = new Motor(hardwareMap, "IntakeSpinner1");
+        intakeSpinner = new Motor(hardwareMap, "Spinner");
         intakeSpinner.setRunMode(Motor.RunMode.RawPower);
 
         // Initialising the Gamepad Button Readers
@@ -29,25 +29,27 @@ public class Intake extends SubsystemBase {
     @Override
     public void periodic() {
 
-        if (gamePad1.isDown(GamepadKeys.Button.A) && !gamePad1.wasJustPressed(GamepadKeys.Button.A)) {
-//
-            intakeCurrentlySpinning = !intakeCurrentlySpinning;
-
-//            if (intakeCurrentlySpinning) {
-//                intakeCurrentlySpinning = false;
-//            } else {
-//                intakeCurrentlySpinning = true;
-//            }
-        }
-
-        if (intakeCurrentlySpinning) {
-            intakeSpinner.set(1);
-        } else {
-            intakeSpinner.set(0);
-        }
-
         // This must be called from the periodic() function of each subsystem for it to be run
         CommandScheduler.getInstance().run();
+
+//        if (gamePad1.isDown(GamepadKeys.Button.A) && !gamePad1.wasJustPressed(GamepadKeys.Button.A)) {
+////
+//            intakeCurrentlySpinning = !intakeCurrentlySpinning;
+//
+////            if (intakeCurrentlySpinning) {
+////                intakeCurrentlySpinning = false;
+////            } else {
+////                intakeCurrentlySpinning = true;
+////            }
+//        }
+//
+//        if (intakeCurrentlySpinning) {
+//            intakeSpinner.set(1);
+//        } else {
+//            intakeSpinner.set(0);
+//        }
+
+        intakeSpinner.set(1);
 
     }
 }

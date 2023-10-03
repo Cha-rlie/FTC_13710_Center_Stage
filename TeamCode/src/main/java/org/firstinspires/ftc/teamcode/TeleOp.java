@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.command.CommandScheduler;
-import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -28,12 +26,18 @@ public class TeleOp extends OpMode {
     public boolean willResetIMU = true;
 
     private Deposit deposit;
+    private Intake intake;
 
     public void init() {
         robot = new Robot(this, false);
         gamePad1 = new GamepadEx(gamepad1);
         gamePad2 = new GamepadEx(gamepad2);
         deposit = new Deposit(hardwareMap);
+        intake = new Intake(hardwareMap, gamePad1);
+        telemetry.addLine("initialization complete");
+        telemetry.update();
+
+
         CommandScheduler.getInstance();
 
     }
@@ -46,17 +50,20 @@ public class TeleOp extends OpMode {
             willResetIMU = false;
         }
     }
+
     public void start () {
         if (willResetIMU) robot.initIMU();
     }
 
 
     public void loop() {
+        GamepadEx driverOp = new GamepadEx(gamepad1);
+        GamepadEx toolOp = new GamepadEx(gamepad2);
+
         Vector2d joystick1 = new Vector2d(gamePad1.getLeftX(), -gamePad1.getLeftY()); //LEFT joystick
         Vector2d joystick2 = new Vector2d(gamePad1.getRightX(), -gamePad1.getRightY()); //RIGHT joystick
 
         robot.driveController.updateUsingJoysticks(checkDeadband(joystick1), checkDeadband(joystick2));
-
 
 //        //uncomment for live tuning of ROT_ADVANTAGE constant
 //        if (gamepad1.b) {
@@ -70,24 +77,34 @@ public class TeleOp extends OpMode {
 //        telemetry.addData("ROT_ADVANTAGE: ", robot.driveController.moduleLeft.ROT_ADVANTAGE);
 
 
+
+
         //to confirm that joysticks are operating properly
         telemetry.addData("Joystick 1", joystick1);
         telemetry.addData("Joystick 2", joystick2);
 
-        // Move the slides Up
-        gamePad2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
-                .whileHeld(new InstantCommand(() -> {
-                    deposit.powerSlides(20);
-                }));
-
-        // Move the slides Down
-        gamePad2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whileHeld(new InstantCommand(() -> {
-                    deposit.powerSlides(-20);
-                }));
 
 
+        if(toolOp.getButton(GamepadKeys.Button.X)) {
+            deposit.placing();
+        } else if (toolOp.getButton(GamepadKeys.Button.B)) {
+            deposit.pickUp();
+        }
 
+
+//        if (toolOp.getButton(GamepadKeys.Button.DPAD_UP)) {
+//            deposit.upSlides();
+//        } else if (toolOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+//            deposit.downSlides();
+//        }
+
+        //deposit.moveSlides(telemetry);
+
+
+        deposit.manualV4BControl(toolOp.getRightY(), telemetry);
+
+        telemetry.addData("Slide Pos 1: ", deposit.DS1.motor.getCurrentPosition());
+        telemetry.addData("Slide Pos 2: ", deposit.DS2.motor.getCurrentPosition());
         telemetry.update();
     }
 

@@ -23,10 +23,10 @@ public class Transfer extends CommandBase {
     public void initialize() {
         // I'm not sure this is needed, so I left it empty, but you can change that :)
         depositSubSystem.rotateGripperAngleToPickUp();
-        depositSubSystem.rotateV4BToPickUp();
+        depositSubSystem.pickUp();
         depositSubSystem.grip();
         depositSubSystem.rotateGripperAngleToDeposit();
-        depositSubSystem.rotateV4BToDeposit();
+        depositSubSystem.placing();
         depositSubSystem.letGo();
     }
 

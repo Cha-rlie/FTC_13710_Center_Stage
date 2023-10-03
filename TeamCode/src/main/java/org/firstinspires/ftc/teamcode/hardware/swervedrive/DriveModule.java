@@ -113,9 +113,9 @@ public class DriveModule {
         //calls method that will apply motor powers necessary to reach target vector in the best way possible, based on current position
         goToTarget(targetVector, directionMultiplier);
 
-        robot.telemetry.addData(moduleSide + " REVERSED: ", reversed);
-        //robot.telemetry.addData(moduleSide + " Trans Vec FC: ", transVecFC);
-        robot.telemetry.addData(moduleSide + " Rot Vec: ", rotVec);
+//        robot.telemetry.addData(moduleSide + " REVERSED: ", reversed);
+//        robot.telemetry.addData(moduleSide + " Trans Vec FC: ", transVecFC);
+//        robot.telemetry.addData(moduleSide + " Rot Vec: ", rotVec);
     }
 
 
@@ -137,9 +137,9 @@ public class DriveModule {
         Vector2d powerVector = new Vector2d(moveComponent, pivotComponent); //order very important here
         setMotorPowers(powerVector);
 
-        robot.telemetry.addData(moduleSide + " Target Vector Angle: ", targetVector.getAngle());
-        robot.telemetry.addData(moduleSide + " Power Vector: ", powerVector);
-        robot.telemetry.addData(moduleSide + " Current orientation: ", getCurrentOrientation().getAngle());
+//        robot.telemetry.addData(moduleSide + " Target Vector Angle: ", targetVector.getAngle());
+//        robot.telemetry.addData(moduleSide + " Power Vector: ", powerVector);
+//        robot.telemetry.addData(moduleSide + " Current orientation: ", getCurrentOrientation().getAngle());
     }
 
 
