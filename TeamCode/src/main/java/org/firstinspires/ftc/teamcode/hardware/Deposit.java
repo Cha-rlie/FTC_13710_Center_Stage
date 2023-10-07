@@ -72,7 +72,8 @@ public class Deposit extends SubsystemBase {
 
     public void grip() {
         if (!gripperState) {
-            Gripper.rotateByAngle(40);
+            Gripper.rotateByAngle
+                    (40);
             gripperState = !gripperState;
         }
     }
