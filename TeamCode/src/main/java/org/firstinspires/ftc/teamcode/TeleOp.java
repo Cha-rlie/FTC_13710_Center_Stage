@@ -1,12 +1,17 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.button.Button;
+import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.hardware.Deposit;
+import org.firstinspires.ftc.teamcode.hardware.Hang;
 import org.firstinspires.ftc.teamcode.hardware.Intake;
+import org.firstinspires.ftc.teamcode.hardware.Transfer;
 import org.firstinspires.ftc.teamcode.hardware.swervedrive.Robot;
 import org.firstinspires.ftc.teamcode.hardware.swervedrive.Vector2d;
 
@@ -14,29 +19,30 @@ import org.firstinspires.ftc.teamcode.hardware.swervedrive.Vector2d;
 
 public class TeleOp extends OpMode {
     Robot robot;
-    GamepadEx gamePad1;
-    GamepadEx gamePad2;
+    GamepadEx driveOp;
+    GamepadEx toolOp;
 
     // Declaring Commands
-
     //deadband for joysticks
     public double DEADBAND_MAG = 0.1;
     public Vector2d DEADBAND_VEC = new Vector2d(DEADBAND_MAG, DEADBAND_MAG);
+
 
     public boolean willResetIMU = true;
 
     private Deposit deposit;
     private Intake intake;
+    private Hang hang;
 
     public void init() {
         robot = new Robot(this, false);
-        gamePad1 = new GamepadEx(gamepad1);
-        gamePad2 = new GamepadEx(gamepad2);
+        driveOp = new GamepadEx(gamepad1);
+        toolOp = new GamepadEx(gamepad2);
         deposit = new Deposit(hardwareMap);
-        intake = new Intake(hardwareMap, gamePad1);
+        intake = new Intake(hardwareMap, driveOp);
+        hang = new Hang(hardwareMap);
         telemetry.addLine("initialization complete");
         telemetry.update();
-
 
         CommandScheduler.getInstance();
 
@@ -46,7 +52,7 @@ public class TeleOp extends OpMode {
     //used when starting TeleOp after auto or if program crashes in the middle of match
     //relevant because of field-centric controls
     public void init_loop() {
-        if (gamePad1.getButton(GamepadKeys.Button.Y)) {
+        if (driveOp.getButton(GamepadKeys.Button.Y)) {
             willResetIMU = false;
         }
     }
@@ -57,11 +63,19 @@ public class TeleOp extends OpMode {
 
 
     public void loop() {
-        GamepadEx driverOp = new GamepadEx(gamepad1);
-        GamepadEx toolOp = new GamepadEx(gamepad2);
 
-        Vector2d joystick1 = new Vector2d(gamePad1.getLeftX(), -gamePad1.getLeftY()); //LEFT joystick
-        Vector2d joystick2 = new Vector2d(gamePad1.getRightX(), -gamePad1.getRightY()); //RIGHT joystick
+        // This must be called from the function that loops in the opmode for everything to run
+        CommandScheduler.getInstance().run();
+
+        // Update the variables
+        if (driveOp.isDown(GamepadKeys.Button.A)) {
+            intake.spin();
+        } else if (!driveOp.isDown(GamepadKeys.Button.A)) {
+            intake.spinFor5Seconds();
+        }
+
+        Vector2d joystick1 = new Vector2d(gamepad1.left_stick_x, -gamepad1.left_stick_y); //LEFT joystick
+        Vector2d joystick2 = new Vector2d(gamepad1.right_stick_x, -gamepad2.right_stick_y); //RIGHT joystick
 
         robot.driveController.updateUsingJoysticks(checkDeadband(joystick1), checkDeadband(joystick2));
 
@@ -77,32 +91,41 @@ public class TeleOp extends OpMode {
 //        telemetry.addData("ROT_ADVANTAGE: ", robot.driveController.moduleLeft.ROT_ADVANTAGE);
 
 
-
-
         //to confirm that joysticks are operating properly
         telemetry.addData("Joystick 1", joystick1);
         telemetry.addData("Joystick 2", joystick2);
 
+        Button transferButton = new GamepadButton(
+                toolOp, GamepadKeys.Button.B
+        );
 
+        transferButton.whenPressed(new Transfer(deposit));
+
+        if(toolOp.getButton(GamepadKeys.Button.DPAD_LEFT)) {hang.raise();}
+        else if(toolOp.getButton(GamepadKeys.Button.DPAD_RIGHT)) {hang.lower();}
 
         if(toolOp.getButton(GamepadKeys.Button.X)) {
             deposit.placing();
-        } else if (toolOp.getButton(GamepadKeys.Button.B)) {
-            deposit.pickUp();
         }
 
+        deposit.rotateWristToAngle(deposit.wristPos);
 
-//        if (toolOp.getButton(GamepadKeys.Button.DPAD_UP)) {
-//            deposit.upSlides();
-//        } else if (toolOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
-//            deposit.downSlides();
-//        }
+        if (toolOp.getButton(GamepadKeys.Button.DPAD_UP)) {
+            deposit.upSlides();
+        } else if (toolOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+            deposit.downSlides();
+        } else {
+            deposit.powerOffSlides();
+        }
 
-        //deposit.moveSlides(telemetry);
-
+        if(hang.hung) {
+            hang.Hang.motor.setPower(0.2);
+        }
 
         deposit.manualV4BControl(toolOp.getRightY(), telemetry);
 
+        telemetry.addData("Wrist Pos", deposit.Wrist.getAngle());
+        telemetry.addData("Hang Pos", hang.Hang.getCurrentPosition());
         telemetry.addData("Slide Pos 1: ", deposit.DS1.motor.getCurrentPosition());
         telemetry.addData("Slide Pos 2: ", deposit.DS2.motor.getCurrentPosition());
         telemetry.update();

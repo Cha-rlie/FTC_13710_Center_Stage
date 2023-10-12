@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.hardware;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 
@@ -11,28 +13,40 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Transfer extends CommandBase {
 
     private final Deposit depositSubSystem;
+    private int targetPos = 0;
 
-    private final GamepadEx gamePad1;
-
-    public Transfer(HardwareMap hardwareMap, GamepadEx gamepad1) {
-        depositSubSystem = new Deposit(hardwareMap);
-        gamePad1 = gamepad1;
+    public Transfer(Deposit deposit) {
+        depositSubSystem = deposit;
     }
 
     @Override
     public void initialize() {
-        // I'm not sure this is needed, so I left it empty, but you can change that :)
-        depositSubSystem.rotateGripperAngleToPickUp();
-        depositSubSystem.pickUp();
-        depositSubSystem.grip();
-        depositSubSystem.rotateGripperAngleToDeposit();
-        depositSubSystem.placing();
-        depositSubSystem.letGo();
+
+    }
+
+    @Override
+    public void execute() {
+        depositSubSystem.DS1.motor.setTargetPosition(targetPos);
+        depositSubSystem.DS2.motor.setTargetPosition(targetPos);
+
+        depositSubSystem.DS1.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        depositSubSystem.DS2.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        depositSubSystem.DS1.motor.setPower(1);
+        depositSubSystem.DS2.motor.setPower(1);
+
+        depositSubSystem.V4B1.turnToAngle(6.4);
+        depositSubSystem.V4B2.turnToAngle(6.4);
+        depositSubSystem.Gripper.turnToAngle(120);
+        depositSubSystem.wristPos = 120;
+
     }
 
     @Override
     public boolean isFinished() {
+        if(toolOp.getButton(GamepadKeys.Button.A)) {
+
+        }
         return true; // This will mean the initialise code will run just once which is what we want
     }
-
 }

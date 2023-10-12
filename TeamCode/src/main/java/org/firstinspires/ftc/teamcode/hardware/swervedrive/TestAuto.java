@@ -13,9 +13,9 @@ public class TestAuto extends LinearOpMode {
         robot.initIMU();
 
         //simple sequence to demonstrate the three main autonomous primitives
-/*
+
         //rotate modules to face to the right
-        robot.driveController.rotateModules(Vector2d.RIGHT, 4000, this);
+        robot.driveController.rotateModules(Vector2d.RIGHT, true, 4000, this);
 
         //drive 20 cm to the right (while facing forward)
         robot.driveController.drive(Vector2d.RIGHT, 20, 1, this);
@@ -23,7 +23,7 @@ public class TestAuto extends LinearOpMode {
         //turn to face robot right
         robot.driveController.rotateRobot(Angle.RIGHT, this);
 
- */
+
     }
 }
 

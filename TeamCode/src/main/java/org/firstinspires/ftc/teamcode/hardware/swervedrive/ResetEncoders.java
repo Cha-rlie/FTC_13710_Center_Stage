@@ -26,6 +26,7 @@ public class ResetEncoders extends OpMode {
     public void loop () {
         telemetry.addData("LEFT Module Orientation: ", robot.driveController.moduleLeft.getCurrentOrientation().getAngle());
         telemetry.addData("RIGHT Module Orientation: ", robot.driveController.moduleRight.getCurrentOrientation().getAngle());
+        telemetry.addLine("Beep Boop We've pushed");
         telemetry.update();
 
         Vector2d joystick1 = new Vector2d(gamepad1.left_stick_x, -gamepad1.left_stick_y); //LEFT joystick

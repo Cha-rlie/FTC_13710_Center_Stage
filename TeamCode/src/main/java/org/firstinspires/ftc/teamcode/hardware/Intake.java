@@ -1,55 +1,63 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
-import com.arcrobotics.ftclib.command.CommandBase;
-import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
+import com.arcrobotics.ftclib.util.Timing.Timer;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import java.util.concurrent.TimeUnit;
 
 public class Intake extends SubsystemBase {
 
     public final Motor intakeSpinner;
 
-    private Boolean intakeCurrentlySpinning = false;
+    public Boolean intakeCurrentlySpinning = false;
 
-    private GamepadEx gamePad1;
+    private GamepadEx toolOp;
 
-    public Intake(HardwareMap hardwareMap, GamepadEx gamepad1) {
+    private Timer timer;
+
+    public Intake(HardwareMap hardwareMap, GamepadEx toolop) {
         // Initialising the Motors
         intakeSpinner = new Motor(hardwareMap, "Spinner");
         intakeSpinner.setRunMode(Motor.RunMode.RawPower);
+        intakeSpinner.setInverted(true);
 
-        // Initialising the Gamepad Button Readers
-        gamePad1 = gamepad1;
+        Timer timer = new Timer(5, TimeUnit.SECONDS);
 
     }
 
-    @Override
-    public void periodic() {
+    public void spin() {
+        intakeSpinner.set(0.7);
+        intakeCurrentlySpinning = true;
+    }
 
-        // This must be called from the periodic() function of each subsystem for it to be run
-        CommandScheduler.getInstance().run();
+    public void spinFor5Seconds() {
+        if (intakeCurrentlySpinning) {
 
-//        if (gamePad1.isDown(GamepadKeys.Button.A) && !gamePad1.wasJustPressed(GamepadKeys.Button.A)) {
-////
-//            intakeCurrentlySpinning = !intakeCurrentlySpinning;
-//
-////            if (intakeCurrentlySpinning) {
-////                intakeCurrentlySpinning = false;
-////            } else {
-////                intakeCurrentlySpinning = true;
-////            }
-//        }
-//
+            if (!timer.isTimerOn()) {
+                timer.start();
+            }
+
+            intakeSpinner.set(0.3);
+
+            if (timer.done()) {
+                intakeSpinner.set(0);
+                intakeCurrentlySpinning = false;
+            }
+        }
+    }
+
+//    @Override
+//    public void periodic() {
 //        if (intakeCurrentlySpinning) {
-//            intakeSpinner.set(1);
+//            intakeSpinner.set(0.7);
 //        } else {
 //            intakeSpinner.set(0);
 //        }
-
-        intakeSpinner.set(1);
-
-    }
+//
+//    }
 }

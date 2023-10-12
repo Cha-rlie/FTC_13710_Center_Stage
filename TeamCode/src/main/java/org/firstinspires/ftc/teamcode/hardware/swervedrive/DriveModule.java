@@ -23,16 +23,16 @@ public class DriveModule {
 
     //TODO: modify this variable to match drive gear ratio
     //public final double TICKS_PER_MODULE_REV = 28 * (double)(60)/11 * (double)(48)/15 * (double)(82)/22 * 2; //ticks per MODULE revolution
-    // The TICKS_PER_MODULE_REV is equal to the (Amount of Outer Teeth on the Large Gear / Amount of Teeth on the Small Gear) * Revs in On Motor Rotation
+    // The TICKS_PER_MODULE_REV is equal to the (Amount of Outer Teeth on the Large Gear / Amount of Teeth on the Small Gear) * Ticks in one Motor Rotation
 
     public final double motorPPR = 145.1; // Pulses (ticks) per revolution. Can be found on the manufacturer website
 
-    public final double TICKS_PER_MODULE_REV = (58 / 12) * motorPPR  * 2;
+    public final double TICKS_PER_MODULE_REV = 4.83333333333 * motorPPR * 2;
     public final double DEGREES_PER_TICK = 360/TICKS_PER_MODULE_REV;
 
     //TODO: modify this variable to match drive gear ratio
     //The TICKS_PER_Wheel_REV is the amount of rotations of the input shaft for one rotation on the wheel. Equal to total gear ratio * motorPPR
-    public final double TICKS_PER_WHEEL_REV = 0.666666666 * motorPPR; //ticks per WHEEL revolution
+    public final double TICKS_PER_WHEEL_REV = 0.66666666665 * motorPPR; //ticks per WHEEL revolution
 
     public final double CM_WHEEL_DIAMETER = 6.3; //TODO: change to match wheel size
     public final double CM_PER_WHEEL_REV = CM_WHEEL_DIAMETER * Math.PI;
@@ -49,7 +49,7 @@ public class DriveModule {
 
     //this variable is set to 0.7 because when in RUN_USING_ENCODERS mode, powers about ~0.7 are the same
     //setting to 1 may increase robot top speed, but may decrease accuracy
-    public double MAX_MOTOR_POWER = 0.7;
+    public double MAX_MOTOR_POWER = 0.8;
 
     //unit vectors representing motors in the rotation power vs. translation power coordinate system
     //more documentation on this coming soon
@@ -86,7 +86,6 @@ public class DriveModule {
 
         motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
     }
 
 
@@ -100,7 +99,8 @@ public class DriveModule {
         Vector2d rotVec = positionVector.normalize(rotMag).rotateBy(90, Angle.Direction.COUNTER_CLOCKWISE); //theoretically this should be rotated 90, not sure sure it doesn't need to be
 
         //combine desired robot translation and robot rotation to get goal vector for the module
-        Vector2d targetVector = transVecFC.add(rotVec); // Testing removing field centric
+        //Vector2d targetVector = transVec.add(rotVec); // Testing removing field centric
+        Vector2d targetVector = transVecFC.add(rotVec);
 
         //allows modules to reverse power instead of rotating 180 degrees
         //example: useful when going from driving forwards to driving backwards
@@ -113,9 +113,9 @@ public class DriveModule {
         //calls method that will apply motor powers necessary to reach target vector in the best way possible, based on current position
         goToTarget(targetVector, directionMultiplier);
 
-//        robot.telemetry.addData(moduleSide + " REVERSED: ", reversed);
-//        robot.telemetry.addData(moduleSide + " Trans Vec FC: ", transVecFC);
-//        robot.telemetry.addData(moduleSide + " Rot Vec: ", rotVec);
+        robot.telemetry.addData(moduleSide + " REVERSED: ", reversed);
+        robot.telemetry.addData(moduleSide + " Trans Vec FC: ", transVecFC);
+        robot.telemetry.addData(moduleSide + " Rot Vec: ", rotVec);
     }
 
 
@@ -252,6 +252,7 @@ public class DriveModule {
         robot.telemetry.addData(moduleSide + "Motor 1 Encoder", motor1.getCurrentPosition());
         robot.telemetry.addData(moduleSide + "Motor 2 Encoder", motor2.getCurrentPosition());
         double rawAngle = (double)(motor2.getCurrentPosition() + motor1.getCurrentPosition())* DEGREES_PER_TICK; //motor2-motor1 makes ccw positive (?)
+        robot.telemetry.addLine(Double.toString(TICKS_PER_MODULE_REV));
         return new Angle(rawAngle, Angle.AngleType.ZERO_TO_360_HEADING);
     }
 
