@@ -49,7 +49,7 @@ public class DriveModule {
 
     //this variable is set to 0.7 because when in RUN_USING_ENCODERS mode, powers about ~0.7 are the same
     //setting to 1 may increase robot top speed, but may decrease accuracy
-    public double MAX_MOTOR_POWER = 0.8;
+    public double MAX_MOTOR_POWER = 0.85;
 
     //unit vectors representing motors in the rotation power vs. translation power coordinate system
     //more documentation on this coming soon
@@ -252,7 +252,6 @@ public class DriveModule {
         robot.telemetry.addData(moduleSide + "Motor 1 Encoder", motor1.getCurrentPosition());
         robot.telemetry.addData(moduleSide + "Motor 2 Encoder", motor2.getCurrentPosition());
         double rawAngle = (double)(motor2.getCurrentPosition() + motor1.getCurrentPosition())* DEGREES_PER_TICK; //motor2-motor1 makes ccw positive (?)
-        robot.telemetry.addLine(Double.toString(TICKS_PER_MODULE_REV));
         return new Angle(rawAngle, Angle.AngleType.ZERO_TO_360_HEADING);
     }
 

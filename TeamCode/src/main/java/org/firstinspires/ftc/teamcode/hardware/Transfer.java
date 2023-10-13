@@ -44,9 +44,7 @@ public class Transfer extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        if(toolOp.getButton(GamepadKeys.Button.A)) {
 
-        }
         return true; // This will mean the initialise code will run just once which is what we want
     }
 }
