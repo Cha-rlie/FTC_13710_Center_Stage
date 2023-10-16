@@ -113,9 +113,9 @@ public class DriveModule {
         //calls method that will apply motor powers necessary to reach target vector in the best way possible, based on current position
         goToTarget(targetVector, directionMultiplier);
 
-        robot.telemetry.addData(moduleSide + " REVERSED: ", reversed);
-        robot.telemetry.addData(moduleSide + " Trans Vec FC: ", transVecFC);
-        robot.telemetry.addData(moduleSide + " Rot Vec: ", rotVec);
+//        robot.telemetry.addData(moduleSide + " REVERSED: ", reversed);
+//        robot.telemetry.addData(moduleSide + " Trans Vec FC: ", transVecFC);
+//        robot.telemetry.addData(moduleSide + " Rot Vec: ", rotVec);
     }
 
 
@@ -160,7 +160,7 @@ public class DriveModule {
             takingShortestPath = false;
         }
 
-        robot.telemetry.addData(moduleSide + " Angle diff (abs. value): ", angleDiff);
+//        robot.telemetry.addData(moduleSide + " Angle diff (abs. value): ", angleDiff);
         Angle.Direction direction = currentAngle.directionTo(targetAngle);
 
         //CCW is negative for heading system
@@ -204,9 +204,9 @@ public class DriveModule {
         if (motorPowersScaled[1].getAngleDouble(Angle.AngleType.NEG_180_TO_180_CARTESIAN) != MOTOR_2_VECTOR.getAngleDouble(Angle.AngleType.NEG_180_TO_180_CARTESIAN)) {
             motor2power *= -1;
         }
-
-        robot.telemetry.addData(moduleSide + " Motor 1 Power: ", motor1power);
-        robot.telemetry.addData(moduleSide + " Motor 2 Power: ", motor2power);
+//
+//        robot.telemetry.addData(moduleSide + " Motor 1 Power: ", motor1power);
+//        robot.telemetry.addData(moduleSide + " Motor 2 Power: ", motor2power);
         motor1.setPower(motor1power);
         motor2.setPower(motor2power);
     }
@@ -234,8 +234,8 @@ public class DriveModule {
             powerVector = new Vector2d(0, getPivotComponent(direction, getCurrentOrientation())); //order important here
         }
         setMotorPowers(powerVector);
-        robot.telemetry.addData(moduleSide + " Power Vector: ", powerVector);
-        robot.telemetry.addData(moduleSide + " Current orientation: ", getCurrentOrientation().getAngle());
+        //robot.telemetry.addData(moduleSide + " Power Vector: ", powerVector);
+        //robot.telemetry.addData(moduleSide + " Current orientation: ", getCurrentOrientation().getAngle());
     }
 
     //does not need to be called at the start of every program
@@ -249,8 +249,8 @@ public class DriveModule {
 
     //returns module orientation relative to ROBOT (not field) in degrees and NEG_180_TO_180_HEADING type
     public Angle getCurrentOrientation() {
-        robot.telemetry.addData(moduleSide + "Motor 1 Encoder", motor1.getCurrentPosition());
-        robot.telemetry.addData(moduleSide + "Motor 2 Encoder", motor2.getCurrentPosition());
+        //robot.telemetry.addData(moduleSide + "Motor 1 Encoder", motor1.getCurrentPosition());
+        //robot.telemetry.addData(moduleSide + "Motor 2 Encoder", motor2.getCurrentPosition());
         double rawAngle = (double)(motor2.getCurrentPosition() + motor1.getCurrentPosition())* DEGREES_PER_TICK; //motor2-motor1 makes ccw positive (?)
         return new Angle(rawAngle, Angle.AngleType.ZERO_TO_360_HEADING);
     }
@@ -278,8 +278,11 @@ public class DriveModule {
         lastMotor1Encoder = currentMotor1Encoder;
         lastMotor2Encoder = currentMotor2Encoder;
 
-        robot.telemetry.addData(moduleSide + "Motor 1 Encoder", motor1.getCurrentPosition());
-        robot.telemetry.addData(moduleSide + "Motor 2 Encoder", motor2.getCurrentPosition());
+
+
+//        robot.telemetry.addData(moduleSide + "Motor 1 Encoder", motor1.getCurrentPosition());
+//        robot.telemetry.addData(moduleSide + "Motor 2 Encoder", motor2.getCurrentPosition());
+
         robot.telemetry.update();
     }
 

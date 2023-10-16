@@ -32,6 +32,7 @@ public class Deposit extends SubsystemBase {
     public int max = 1500;
     public double power = 1;
     public double wristPos = 90;
+    public float currentDrawDT = 0;
 
     // Initialise Safety Variables
     public boolean gripperState = false; // Not Gripped
@@ -45,12 +46,12 @@ public class Deposit extends SubsystemBase {
         DS2 = new MotorEx(hardwareMap, "DS2");
 
         int MIN_ANGLE = 0;
-        int MAX_ANGLE = 180;
+        int MAX_ANGLE = 355;
 
         V4B1 = new SimpleServo(hardwareMap, "V4B1", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
         V4B2 = new SimpleServo(hardwareMap, "V4B2", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
-        Wrist = new SimpleServo(hardwareMap, "W", 0, 300, AngleUnit.DEGREES);
-        Gripper = new SimpleServo(hardwareMap, "G", 0, 300, AngleUnit.DEGREES);
+        Wrist = new SimpleServo(hardwareMap, "W", 0, 260, AngleUnit.DEGREES);
+        Gripper = new SimpleServo(hardwareMap, "G", 0, 260, AngleUnit.DEGREES);
 
         V4B1.setInverted(true);
 
