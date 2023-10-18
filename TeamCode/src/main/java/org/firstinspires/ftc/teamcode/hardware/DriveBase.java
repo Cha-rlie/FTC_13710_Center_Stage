@@ -1,0 +1,58 @@
+package org.firstinspires.ftc.teamcode.hardware;
+
+import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.arcrobotics.ftclib.drivebase.MecanumDrive;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
+public class DriveBase extends SubsystemBase {
+
+    // Declare drivebase motor variables
+    MotorEx frontLeft;
+    MotorEx frontRight;
+    MotorEx rearLeft;
+    MotorEx rearRight;
+
+    // Declare the drivebase
+    MecanumDrive drivebase;
+
+    // Declare variables
+    double speedModifier;
+
+    public DriveBase(HardwareMap hardwareMap) {
+        // Assign corresponding values to the MotorEx objects with the correct RPMs since they are GoBildas
+        frontLeft = new MotorEx(hardwareMap, "FrontLeft", Motor.GoBILDA.RPM_223);
+        frontLeft.setRunMode(Motor.RunMode.RawPower);
+
+        frontRight = new MotorEx(hardwareMap, "FrontRight", Motor.GoBILDA.RPM_223);
+        frontRight.setRunMode(Motor.RunMode.RawPower);
+
+        rearLeft =  new MotorEx(hardwareMap, "RearLeft", Motor.GoBILDA.RPM_223);
+        rearLeft.setRunMode(Motor.RunMode.RawPower);
+
+        rearRight = new MotorEx(hardwareMap, "RearRight", Motor.GoBILDA.RPM_223);
+        rearRight.setRunMode(Motor.RunMode.RawPower);
+
+        // Assign a new mecanum drivebase to the driveBase variable
+        drivebase = new MecanumDrive(frontLeft, frontRight, rearLeft, rearRight);
+
+    }
+
+    public void userControlledDrive(GamepadEx driveOp) {
+        if (driveOp.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).get()) {
+            speedModifier = 0.35;
+        } else if (driveOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).get()) {
+            speedModifier = 1;
+        } else {
+            speedModifier = 0.7;
+        }
+        // Drive the robot using gamepad input in a field-centric way
+        drivebase.driveRobotCentric(-driveOp.getLeftX(), -driveOp.getLeftY(), -driveOp.getRightX());
+    }
+
+    // More Functions Could be Added Here (Especially for Auto)
+
+}

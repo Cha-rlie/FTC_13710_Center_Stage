@@ -14,15 +14,15 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.hardware.Deposit;
-import org.firstinspires.ftc.teamcode.hardware.Drivebase;
+import org.firstinspires.ftc.teamcode.hardware.DriveBase;
 import org.firstinspires.ftc.teamcode.hardware.Hang;
 import org.firstinspires.ftc.teamcode.hardware.Intake;
 import org.firstinspires.ftc.teamcode.hardware.Transfer;
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Diff Swerve TeleOp", group = "TeleOp")
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Competition TeleOp", group = "TeleOp")
 
 public class TeleOp extends OpMode {
-    Drivebase drivebase;
+    DriveBase driveBase;
     IMU imuGyro;
     GamepadEx driveOp;
     GamepadEx toolOp;
@@ -30,24 +30,24 @@ public class TeleOp extends OpMode {
     public boolean willResetIMU = true;
 
     // Declaring Commands
-    private Deposit deposit;
-    private Intake intake;
-    private Hang hang;
+    //private Deposit deposit;
+    //private Intake intake;
+    //private Hang hang;
 
     public void init() {
-        drivebase = new Drivebase(hardwareMap);
-        // Initialise the IMU with the correct orientation
-        imuGyro.initialize(new IMU.Parameters(
+        driveBase = new DriveBase(hardwareMap);
+        // Initialise the imuGyro with the correct orientation
+        /*imuGyro.initialize(new IMU.Parameters(
                 new RevHubOrientationOnRobot(
                         RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                        RevHubOrientationOnRobot.UsbFacingDirection.UP
+                        RevHubOrientationOnRobot.UsbFacingDirection.DOWN
                 )
-        ));
+        ));*/
         driveOp = new GamepadEx(gamepad1);
         toolOp = new GamepadEx(gamepad2);
-        deposit = new Deposit(hardwareMap);
-        intake = new Intake(hardwareMap, driveOp);
-        hang = new Hang(hardwareMap);
+        //deposit = new Deposit(hardwareMap);
+        //intake = new Intake(hardwareMap, driveOp);
+        //hang = new Hang(hardwareMap);
         telemetry.addLine("initialization complete");
         telemetry.update();
 
@@ -65,7 +65,7 @@ public class TeleOp extends OpMode {
     }
 
     public void start () {
-        if (willResetIMU) imuGyro.resetYaw();
+        //if (willResetIMU) imuGyro.resetYaw();
     }
 
 
@@ -75,48 +75,48 @@ public class TeleOp extends OpMode {
         CommandScheduler.getInstance().run();
 
         // Run the drivebase with the driveOp gamepad
-        drivebase.userControlledDrive(driveOp, imuGyro.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+        driveBase.userControlledDrive(driveOp);
 
         // Update the variables
         if (driveOp.isDown(GamepadKeys.Button.A)) {
-            intake.spin();
+            //intake.spin();
         } else if (!driveOp.isDown(GamepadKeys.Button.A)) {
-            intake.spinFor5Seconds();
+            //intake.spinFor5Seconds();
         }
 
         Button transferButton = new GamepadButton(
                 toolOp, GamepadKeys.Button.B
         );
 
-        transferButton.whenPressed(new Transfer(deposit));
+        //transferButton.whenPressed(new Transfer(deposit));
 
-        if(toolOp.getButton(GamepadKeys.Button.DPAD_LEFT)) {hang.raise();}
-        else if(toolOp.getButton(GamepadKeys.Button.DPAD_RIGHT)) {hang.lower();}
+        //if(toolOp.getButton(GamepadKeys.Button.DPAD_LEFT)) {hang.raise();}
+        //else if(toolOp.getButton(GamepadKeys.Button.DPAD_RIGHT)) {hang.lower();}
 
-        if(toolOp.getButton(GamepadKeys.Button.X)) {
-            deposit.placing();
+        if (toolOp.getButton(GamepadKeys.Button.X)) {
+            //deposit.placing();
         }
 
-        deposit.rotateWristToAngle(deposit.wristPos);
+        //deposit.rotateWristToAngle(deposit.wristPos);
 
         if (toolOp.getButton(GamepadKeys.Button.DPAD_UP)) {
-            deposit.upSlides();
+            //deposit.upSlides();
         } else if (toolOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
-            deposit.downSlides();
+            //deposit.downSlides();
         } else {
-            deposit.powerOffSlides();
+            //deposit.powerOffSlides();
         }
 
-        if(hang.hung) {
-            hang.Hang.motor.setPower(0.2);
-        }
+//        if(hang.hung) {
+//            hang.Hang.motor.setPower(0.2);
+//        }
 
-        deposit.manualV4BControl(toolOp.getRightY(), telemetry);
-
-        telemetry.addData("Wrist Pos", deposit.Wrist.getAngle());
-        telemetry.addData("Hang Pos", hang.Hang.getCurrentPosition());
-        telemetry.addData("Slide Pos 1: ", deposit.DS1.motor.getCurrentPosition());
-        telemetry.addData("Slide Pos 2: ", deposit.DS2.motor.getCurrentPosition());
+//        deposit.manualV4BControl(toolOp.getRightY(), telemetry);
+//
+//        telemetry.addData("Wrist Pos", deposit.Wrist.getAngle());
+//        telemetry.addData("Hang Pos", hang.Hang.getCurrentPosition());
+//        telemetry.addData("Slide Pos 1: ", deposit.DS1.motor.getCurrentPosition());
+//        telemetry.addData("Slide Pos 2: ", deposit.DS2.motor.getCurrentPosition());
         telemetry.update();
     }
 }
