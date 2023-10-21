@@ -30,8 +30,8 @@ public class TeleOp extends OpMode {
     public boolean willResetIMU = true;
 
     // Declaring Commands
-    //private Deposit deposit;
-    //private Intake intake;
+    private Deposit deposit;
+    private Intake intake;
     //private Hang hang;
 
     public void init() {
@@ -45,8 +45,8 @@ public class TeleOp extends OpMode {
         ));*/
         driveOp = new GamepadEx(gamepad1);
         toolOp = new GamepadEx(gamepad2);
-        //deposit = new Deposit(hardwareMap);
-        //intake = new Intake(hardwareMap, driveOp);
+        deposit = new Deposit(hardwareMap);
+        intake = new Intake(hardwareMap, driveOp);
         //hang = new Hang(hardwareMap);
         telemetry.addLine("initialization complete");
         telemetry.update();
@@ -68,7 +68,6 @@ public class TeleOp extends OpMode {
         //if (willResetIMU) imuGyro.resetYaw();
     }
 
-
     public void loop() {
 
         // This must be called from the function that loops in the opmode for everything to run
@@ -84,34 +83,32 @@ public class TeleOp extends OpMode {
             //intake.spinFor5Seconds();
         }
 
-        Button transferButton = new GamepadButton(
+       Button transferButton = new GamepadButton(
                 toolOp, GamepadKeys.Button.B
         );
+       transferButton.whenPressed(new Transfer(deposit));
 
-        //transferButton.whenPressed(new Transfer(deposit));
-
-        //if(toolOp.getButton(GamepadKeys.Button.DPAD_LEFT)) {hang.raise();}
-        //else if(toolOp.getButton(GamepadKeys.Button.DPAD_RIGHT)) {hang.lower();}
-
-        if (toolOp.getButton(GamepadKeys.Button.X)) {
-            //deposit.placing();
+        if (driveOp.getButton(GamepadKeys.Button.X)) {
+            deposit.placing();
+        } else if (driveOp.getButton(GamepadKeys.Button.A)) {
+            deposit.grip();
         }
 
-        //deposit.rotateWristToAngle(deposit.wristPos);
 
-        if (toolOp.getButton(GamepadKeys.Button.DPAD_UP)) {
-            //deposit.upSlides();
-        } else if (toolOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
-            //deposit.downSlides();
-        } else {
-            //deposit.powerOffSlides();
-        }
+//        if (toolOp.getButton(GamepadKeys.Button.DPAD_UP)) {
+//            deposit.upSlides();
+//        } else if (toolOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+//            deposit.downSlides();
+//        } else {
+//            deposit.powerOffSlides();
+//        }
 
 //        if(hang.hung) {
 //            hang.Hang.motor.setPower(0.2);
 //        }
 
-//        deposit.manualV4BControl(toolOp.getRightY(), telemetry);
+        deposit.manualV4BControl(toolOp.getRightY(), telemetry);
+        deposit.manualWristControl(toolOp.getLeftY(), telemetry);
 //
 //        telemetry.addData("Wrist Pos", deposit.Wrist.getAngle());
 //        telemetry.addData("Hang Pos", hang.Hang.getCurrentPosition());

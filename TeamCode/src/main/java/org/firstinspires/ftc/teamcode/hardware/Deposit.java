@@ -42,8 +42,8 @@ public class Deposit extends SubsystemBase {
 //        GS = new SimpleServo(hardwareMap, "GS", 0, 360, AngleUnit.DEGREES);
 
 
-        DS1 = new MotorEx(hardwareMap, "DS1");
-        DS2 = new MotorEx(hardwareMap, "DS2");
+        DS1 = new MotorEx(hardwareMap, "DS1", Motor.GoBILDA.RPM_1150);
+        DS2 = new MotorEx(hardwareMap, "DS2", Motor.GoBILDA.RPM_1150);
 
         int MIN_ANGLE = 0;
         int MAX_ANGLE = 355;
@@ -55,61 +55,52 @@ public class Deposit extends SubsystemBase {
 
         V4B1.setInverted(true);
 
-        V4B1.turnToAngle(180);
-        V4B2.turnToAngle(180);
+        V4B1.turnToAngle(90);
+        V4B2.turnToAngle(90);
         Gripper.turnToAngle(60);
-        Wrist.turnToAngle(180);
+        Wrist.turnToAngle(120);
 
         Timer timer = new Timer(2);
         timer.start();
 
         while(!timer.done()) {
         }
-//
-//        DS =  new MotorGroup(DS1, DS2);
-//        DS.setRunMode(Motor.RunMode.PositionControl);
 
         resetPosition();
     }
 
     public void grip() {
         if (gripperState) {
-            Gripper.turnToAngle(0);
-            //gripperState = !gripperState;
+            Gripper.turnToAngle(35);
+            gripperState = !gripperState;
         } else {
-            Gripper.turnToAngle(120);
+            Gripper.turnToAngle(100);
+            gripperState = !gripperState;
         }
     }
 
     public void placing() {
-        V4B1.turnToAngle(180);
-        V4B2.turnToAngle(180);
-        wristPos = 180;
+        V4B1.turnToAngle(280);
+        V4B2.turnToAngle(280);
+        Wrist.turnToAngle(20);
     }
 
     public void manualV4BControl(double angle, Telemetry telemetry) {
-        int scaling = 10;
+        int scaling = 5;
 
         V4B1.rotateByAngle(-angle  * scaling);
         V4B2.rotateByAngle(-angle  * scaling);
+        Wrist.rotateByAngle(angle  * scaling * 14/48);
 
         telemetry.addData("V4B: ", V4B1.getAngle());
     }
 
+    public void manualWristControl(double angle, Telemetry telemetry) {
+        int scaling = 5;
 
-    public void rotateWristToAngle(double angle) {
-        // Pretty much, the wrist is a temperamental thing. Its max and min values change depending
-        // on where the V4B, and if those limits aren't adhered to, the belt will skip badly. To move
-        // the wrist, this method clamps values according to the V4B position, so it won't break anything.
+        Wrist.rotateByAngle(-angle  * scaling);
 
-        double m = 0.65625;
-        double c = 10;
-        double centerWristPos = m * V4B1.getAngle() + c;
-
-        double min = centerWristPos;
-        double max = centerWristPos;
-
-        Wrist.turnToAngle(MathUtils.clamp(angle, min, max));
+        telemetry.addData("Wrist: ", Wrist.getAngle());
     }
 
 

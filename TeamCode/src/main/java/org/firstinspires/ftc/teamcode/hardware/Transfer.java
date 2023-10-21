@@ -26,25 +26,12 @@ public class Transfer extends CommandBase {
 
     @Override
     public void execute() {
-        depositSubSystem.DS1.motor.setTargetPosition(targetPos);
-        depositSubSystem.DS2.motor.setTargetPosition(targetPos);
-
-        depositSubSystem.DS1.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        depositSubSystem.DS2.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        depositSubSystem.DS1.motor.setPower(1);
-        depositSubSystem.DS2.motor.setPower(1);
-
-        depositSubSystem.V4B1.turnToAngle(6.4);
-        depositSubSystem.V4B2.turnToAngle(6.4);
-        depositSubSystem.Gripper.turnToAngle(120);
-        depositSubSystem.wristPos = 120;
-
+        depositSubSystem.V4B1.turnToAngle(50);
+        depositSubSystem.V4B2.turnToAngle(50);
     }
 
     @Override
     public boolean isFinished() {
-
         return true; // This will mean the initialise code will run just once which is what we want
     }
 }
