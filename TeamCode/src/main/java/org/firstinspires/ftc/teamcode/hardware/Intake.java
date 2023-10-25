@@ -18,17 +18,17 @@ public class Intake extends SubsystemBase {
 
     private GamepadEx toolOp;
 
-    public Timer timer = new Timer(5, TimeUnit.SECONDS);
+    private Timer timer = new Timer(5, TimeUnit.SECONDS);
 
     public Intake(HardwareMap hardwareMap, GamepadEx toolop) {
         // Initialising the Motors
         intakeSpinner = new Motor(hardwareMap, "Spinner");
         intakeSpinner.setRunMode(Motor.RunMode.RawPower);
-        intakeSpinner.setInverted(true);
+        intakeSpinner.setInverted(false);
     }
 
     public void spin() {
-        intakeSpinner.set(0.7);
+        intakeSpinner.set(0.6);
         intakeCurrentlySpinning = true;
     }
 
@@ -39,7 +39,7 @@ public class Intake extends SubsystemBase {
                 timer.start();
             }
 
-            intakeSpinner.set(0.3);
+            intakeSpinner.set(0.4);
 
             if (timer.done()) {
                 intakeSpinner.set(0);

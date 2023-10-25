@@ -17,7 +17,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 public class Deposit extends SubsystemBase {
 
     // Servos
-    ServoEx Gripper; // Gripper
     public ServoEx Wrist; // Wrist
     public ServoEx V4B1; // V4B
     public ServoEx V4B2;
@@ -31,11 +30,7 @@ public class Deposit extends SubsystemBase {
     public int min = 0;
     public int max = 1500;
     public double power = 1;
-    public double wristPos = 90;
-    public float currentDrawDT = 0;
-
-    // Initialise Safety Variables
-    public boolean gripperState = false; // Not Gripped
+    public double defaultWrist = 140;
 
     public Deposit(HardwareMap hardwareMap) {
         // Assign variables here with parameters
@@ -51,14 +46,12 @@ public class Deposit extends SubsystemBase {
         V4B1 = new SimpleServo(hardwareMap, "V4B1", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
         V4B2 = new SimpleServo(hardwareMap, "V4B2", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
         Wrist = new SimpleServo(hardwareMap, "W", 0, 260, AngleUnit.DEGREES);
-        Gripper = new SimpleServo(hardwareMap, "G", 0, 260, AngleUnit.DEGREES);
 
         V4B1.setInverted(true);
 
         V4B1.turnToAngle(90);
         V4B2.turnToAngle(90);
-        Gripper.turnToAngle(60);
-        Wrist.turnToAngle(120);
+        Wrist.turnToAngle(defaultWrist);
 
         Timer timer = new Timer(2);
         timer.start();
@@ -69,28 +62,16 @@ public class Deposit extends SubsystemBase {
         resetPosition();
     }
 
-    public void grip() {
-        if (gripperState) {
-            Gripper.turnToAngle(35);
-            gripperState = !gripperState;
-        } else {
-            Gripper.turnToAngle(100);
-            gripperState = !gripperState;
-        }
-    }
-
     public void placing() {
-        V4B1.turnToAngle(280);
-        V4B2.turnToAngle(280);
-        Wrist.turnToAngle(20);
+        V4B1.turnToAngle(250);
+        V4B2.turnToAngle(250);
     }
 
     public void manualV4BControl(double angle, Telemetry telemetry) {
-        int scaling = 5;
+        int scaling = 8;
 
         V4B1.rotateByAngle(-angle  * scaling);
         V4B2.rotateByAngle(-angle  * scaling);
-        Wrist.rotateByAngle(angle  * scaling * 14/48);
 
         telemetry.addData("V4B: ", V4B1.getAngle());
     }

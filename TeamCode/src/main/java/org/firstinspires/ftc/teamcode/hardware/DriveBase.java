@@ -41,7 +41,7 @@ public class DriveBase extends SubsystemBase {
 
     }
 
-    public void userControlledDrive(GamepadEx driveOp) {
+    public void userControlledDrive(GamepadEx driveOp, double heading) {
         if (driveOp.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).get()) {
             speedModifier = 0.35;
         } else if (driveOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).get()) {
@@ -50,7 +50,10 @@ public class DriveBase extends SubsystemBase {
             speedModifier = 0.7;
         }
         // Drive the robot using gamepad input in a field-centric way
-        drivebase.driveRobotCentric(-driveOp.getLeftX(), -driveOp.getLeftY(), -driveOp.getRightX());
+        drivebase.driveFieldCentric(-driveOp.getLeftX()*speedModifier,
+                -driveOp.getLeftY()*speedModifier,
+                -driveOp.getRightX()*speedModifier,
+                heading);
     }
 
     // More Functions Could be Added Here (Especially for Auto)

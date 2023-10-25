@@ -1,4 +1,6 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
-public class DroneLauncher {
+import com.arcrobotics.ftclib.command.SubsystemBase;
+
+public class DroneLauncher extends SubsystemBase {
 }
