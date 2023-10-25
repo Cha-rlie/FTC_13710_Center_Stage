@@ -10,9 +10,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.hardware.Deposit;
 
 
-// THIS IS FOR FUTURE USE, BUT IT IS NOT NEEDED RIGHT NOW
-// This still needs a fair amount of work, but it's a good start I think :)
-
 public class Serve extends CommandBase {
 
     private final Deposit depositSubSystem;
