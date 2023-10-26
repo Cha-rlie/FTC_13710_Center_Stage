@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.autonomous.aprilTagDetection.AprilTagCamer
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 
-@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Red Front Auto", group = "Red Autos")
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Blue Back Auto", group = "Blue Autos")
 
 public class BlueBackAuto extends OpMode {
 

@@ -40,9 +40,10 @@ public class TeleOp extends OpMode {
         imu.initialize(new IMU.Parameters(
                 new RevHubOrientationOnRobot(
                         RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                        RevHubOrientationOnRobot.UsbFacingDirection.DOWN
+                        RevHubOrientationOnRobot.UsbFacingDirection.UP
                 )
         ));
+        imu.resetYaw();
         driveOp = new GamepadEx(gamepad1);
         toolOp = new GamepadEx(gamepad2);
         deposit = new Deposit(hardwareMap);
@@ -99,13 +100,13 @@ public class TeleOp extends OpMode {
         }
 
 
-//        if (toolOp.getButton(GamepadKeys.Button.DPAD_UP)) {
-//            deposit.upSlides();
-//        } else if (toolOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
-//            deposit.downSlides();
-//        } else {
-//            deposit.powerOffSlides();
-//        }
+        if (toolOp.getButton(GamepadKeys.Button.DPAD_UP)) {
+            deposit.upSlides();
+        } else if (toolOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+            deposit.downSlides();
+        } else {
+            deposit.powerOffSlides();
+        }
 
 //        if(hang.hung) {
 //            hang.Hang.motor.setPower(0.2);

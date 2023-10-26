@@ -36,7 +36,6 @@ public class Deposit extends SubsystemBase {
         // Assign variables here with parameters
 //        GS = new SimpleServo(hardwareMap, "GS", 0, 360, AngleUnit.DEGREES);
 
-
         DS1 = new MotorEx(hardwareMap, "DS1", Motor.GoBILDA.RPM_1150);
         DS2 = new MotorEx(hardwareMap, "DS2", Motor.GoBILDA.RPM_1150);
 
@@ -56,7 +55,7 @@ public class Deposit extends SubsystemBase {
         Timer timer = new Timer(2);
         timer.start();
 
-        while(!timer.done()) {
+        while (!timer.done()) {
         }
 
         resetPosition();

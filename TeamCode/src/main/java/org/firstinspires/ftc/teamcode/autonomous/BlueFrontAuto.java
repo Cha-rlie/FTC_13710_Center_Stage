@@ -9,7 +9,7 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 
-@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Red Front Auto", group = "Red Autos")
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Blue Front Auto", group = "Blue Autos")
 
 public class BlueFrontAuto extends OpMode {
 
