@@ -18,8 +18,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 public class Hang extends SubsystemBase {
 
     public MotorEx Hang; // Deposit Slide 1
-    public boolean hung = false;
-    public int runningPos = 200;
 
     public Hang(HardwareMap hardwareMap) {
         // Assign variables here with parameters
@@ -29,11 +27,10 @@ public class Hang extends SubsystemBase {
     }
 
     public void raise() {
-        hung = true;
+        Hang.motor.setPower(-0.7);
     }
 
     public void lower() {
-        hung = false;
-        Hang.motor.setPower(-0.1);
+        Hang.motor.setPower(0.1);
     }
 }

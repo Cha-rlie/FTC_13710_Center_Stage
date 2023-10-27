@@ -11,8 +11,10 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 // Import local FTCLib hardware classes
+import org.firstinspires.ftc.teamcode.commands.Serve;
 import org.firstinspires.ftc.teamcode.hardware.Deposit;
-import org.firstinspires.ftc.teamcode.hardware.DriveBase;
+import org.firstinspires.ftc.teamcode.hardware.Drivebase;
+import org.firstinspires.ftc.teamcode.hardware.Hang;
 import org.firstinspires.ftc.teamcode.hardware.Intake;
 
 // Import local FTCLib command classes
@@ -21,7 +23,7 @@ import org.firstinspires.ftc.teamcode.commands.Omelette;
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Competition TeleOp", group = "TeleOp")
 
 public class TeleOp extends OpMode {
-    DriveBase driveBase;
+    Drivebase driveBase;
     IMU imu;
     GamepadEx driveOp;
     GamepadEx toolOp;
@@ -31,10 +33,10 @@ public class TeleOp extends OpMode {
     // Declaring Commands
     private Deposit deposit;
     private Intake intake;
-    //private Hang hang;
+    private Hang hang;
 
     public void init() {
-        driveBase = new DriveBase(hardwareMap);
+        driveBase = new Drivebase(hardwareMap);
         // Initialise the imuGyro with the correct orientation
         imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(
@@ -48,7 +50,7 @@ public class TeleOp extends OpMode {
         toolOp = new GamepadEx(gamepad2);
         deposit = new Deposit(hardwareMap);
         intake = new Intake(hardwareMap, driveOp);
-        //hang = new Hang(hardwareMap);
+        hang = new Hang(hardwareMap);
         telemetry.addLine("initialization complete");
         telemetry.update();
 
@@ -94,9 +96,15 @@ public class TeleOp extends OpMode {
         Button flipButtom = new GamepadButton(toolOp, GamepadKeys.Button.A);
         flipButtom.whenPressed(new Omelette(deposit));
 
+        // Serves
+        Button ServeButton = new GamepadButton(toolOp, GamepadKeys.Button.X);
+        ServeButton.whenPressed(new Serve(deposit));
 
-        if (toolOp.getButton(GamepadKeys.Button.X)) {
-            deposit.placing();
+
+        if(driveOp.getButton(GamepadKeys.Button.DPAD_UP)) {
+            hang.raise();
+        } else if (driveOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+            hang.lower();
         }
 
 
@@ -108,9 +116,6 @@ public class TeleOp extends OpMode {
             deposit.powerOffSlides();
         }
 
-//        if(hang.hung) {
-//            hang.Hang.motor.setPower(0.2);
-//        }
 
         deposit.manualV4BControl(toolOp.getRightY(), telemetry);
         deposit.manualWristControl(toolOp.getLeftY(), telemetry);

@@ -28,7 +28,7 @@ public class Intake extends SubsystemBase {
     }
 
     public void spin() {
-        intakeSpinner.set(0.6);
+        intakeSpinner.set(-1);
         intakeCurrentlySpinning = true;
     }
 

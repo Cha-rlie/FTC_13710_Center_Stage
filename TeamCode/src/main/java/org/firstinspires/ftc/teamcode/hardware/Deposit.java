@@ -28,9 +28,9 @@ public class Deposit extends SubsystemBase {
     public MotorGroup DS; // Deposit Slides
     // Slide positions
     public int min = 0;
-    public int max = 1500;
+    public int max = 760;
     public double power = 1;
-    public double defaultWrist = 140;
+    public double defaultWrist = 180;
 
     public Deposit(HardwareMap hardwareMap) {
         // Assign variables here with parameters
@@ -38,6 +38,8 @@ public class Deposit extends SubsystemBase {
 
         DS1 = new MotorEx(hardwareMap, "DS1", Motor.GoBILDA.RPM_1150);
         DS2 = new MotorEx(hardwareMap, "DS2", Motor.GoBILDA.RPM_1150);
+        DS1.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        DS2.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         int MIN_ANGLE = 0;
         int MAX_ANGLE = 355;
@@ -48,8 +50,9 @@ public class Deposit extends SubsystemBase {
 
         V4B1.setInverted(true);
 
-        V4B1.turnToAngle(90);
-        V4B2.turnToAngle(90);
+        // 33 is transfer pos
+        V4B1.turnToAngle(33);
+        V4B2.turnToAngle(33);
         Wrist.turnToAngle(defaultWrist);
 
         Timer timer = new Timer(2);
@@ -61,10 +64,6 @@ public class Deposit extends SubsystemBase {
         resetPosition();
     }
 
-    public void placing() {
-        V4B1.turnToAngle(250);
-        V4B2.turnToAngle(250);
-    }
 
     public void manualV4BControl(double angle, Telemetry telemetry) {
         int scaling = 8;
@@ -106,8 +105,6 @@ public class Deposit extends SubsystemBase {
 
         DS1.motor.setPower(power);
         DS2.motor.setPower(power);
-
-        placing();
     }
 
     public void downSlides() {
@@ -124,24 +121,6 @@ public class Deposit extends SubsystemBase {
     public void powerOffSlides() {
         DS1.motor.setPower(0);
         DS2.motor.setPower(0);
-    }
-
-    public void moveSlides(Telemetry telemetry) {
-        // set the target position
-        DS1.setTargetPosition(max);      // an integer representing
-        // desired tick count
-        DS.set(0);
-
-        DS.setPositionCoefficient(0.1);
-        double kP = DS.getPositionCoefficient();
-        DS.setPositionTolerance(30);   // allowed maximum error
-
-        // perform the control loop
-        while (!DS1.atTargetPosition()) {
-            DS.set(-1);
-        }
-
-        DS.stopMotor(); // stop the motor
     }
 
     public boolean withinUncertainty(double currentPos, double wantedPos, double range) {

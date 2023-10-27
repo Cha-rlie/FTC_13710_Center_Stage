@@ -15,6 +15,7 @@ public class Serve extends CommandBase {
     private final Deposit depositSubSystem;
     private int targetPos = 0;
     boolean operationFinished;
+    double increment;
 
     public Serve(Deposit deposit) {
         depositSubSystem = deposit;
@@ -23,35 +24,37 @@ public class Serve extends CommandBase {
     @Override
     public void initialize() {
         operationFinished = false;
-
-        depositSubSystem.V4B1.turnToAngle(90);
-        depositSubSystem.V4B2.turnToAngle(90);
+        increment = depositSubSystem.V4B1.getAngle();
     }
 
     @Override
     public void execute() {
         int currentLocation = (depositSubSystem.DS1.motor.getCurrentPosition()
                 + depositSubSystem.DS2.motor.getCurrentPosition())/2;
-        int safePos = 500;
+        int safePos = 200;
         int uncertainty = 10;
 
         // Determine whether the outtake is past the safe rotation position
-        if(currentLocation >= safePos-uncertainty) {
-            depositSubSystem.V4B1.turnToAngle(250);
-            depositSubSystem.V4B2.turnToAngle(250);
-            operationFinished = true;
-        } else {
-            // Run to the safe position
-            while (!depositSubSystem.withinUncertainty(currentLocation, safePos, uncertainty)) {
-                depositSubSystem.DS1.motor.setTargetPosition(safePos);
-                depositSubSystem.DS2.motor.setTargetPosition(safePos);
+        if(currentLocation >= safePos-(uncertainty*2)) {
+            depositSubSystem.Wrist.turnToAngle(185);
 
-                depositSubSystem.DS1.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                depositSubSystem.DS2.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                depositSubSystem.DS1.motor.setPower(1);
-                depositSubSystem.DS2.motor.setPower(1);
+            if(increment < 180) {
+                depositSubSystem.V4B1.rotateByAngle(1);
+                depositSubSystem.V4B2.rotateByAngle(1);
+                increment += 1;
+            } else {
+                operationFinished = true;
             }
+
+        } else {
+            depositSubSystem.DS1.motor.setTargetPosition(safePos);
+            depositSubSystem.DS2.motor.setTargetPosition(safePos);
+
+            depositSubSystem.DS1.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            depositSubSystem.DS2.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            depositSubSystem.DS1.motor.setPower(1);
+            depositSubSystem.DS2.motor.setPower(1);
         }
     }
 

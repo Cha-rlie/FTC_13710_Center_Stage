@@ -28,6 +28,20 @@ public class Reset extends CommandBase {
 
     @Override
     public void execute() {
+        int currentLocation = (depositSubSystem.DS1.motor.getCurrentPosition()
+                + depositSubSystem.DS2.motor.getCurrentPosition())/2;
+        int uncertainty = 10;
+
+        while (!depositSubSystem.withinUncertainty(currentLocation, depositSubSystem.min, uncertainty)) {
+            depositSubSystem.DS1.motor.setTargetPosition(depositSubSystem.min);
+            depositSubSystem.DS2.motor.setTargetPosition(depositSubSystem.min);
+
+            depositSubSystem.DS1.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            depositSubSystem.DS2.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            depositSubSystem.DS1.motor.setPower(1);
+            depositSubSystem.DS2.motor.setPower(1);
+        }
     }
 
     @Override
