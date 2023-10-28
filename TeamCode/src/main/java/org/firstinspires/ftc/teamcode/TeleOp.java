@@ -5,12 +5,16 @@ import com.arcrobotics.ftclib.command.button.Button;
 import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.arcrobotics.ftclib.util.MathUtils;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 // Import local FTCLib hardware classes
+import org.firstinspires.ftc.teamcode.commands.Reset;
 import org.firstinspires.ftc.teamcode.commands.Serve;
 import org.firstinspires.ftc.teamcode.hardware.Deposit;
 import org.firstinspires.ftc.teamcode.hardware.Drivebase;
@@ -29,6 +33,8 @@ public class TeleOp extends OpMode {
     GamepadEx toolOp;
 
     public boolean willResetIMU = true;
+    ElapsedTime timer = new ElapsedTime();
+    boolean commandRun;
 
     // Declaring Commands
     private Deposit deposit;
@@ -46,6 +52,7 @@ public class TeleOp extends OpMode {
                 )
         ));
         imu.resetYaw();
+        commandRun = false;
         driveOp = new GamepadEx(gamepad1);
         toolOp = new GamepadEx(gamepad2);
         deposit = new Deposit(hardwareMap);
@@ -84,6 +91,8 @@ public class TeleOp extends OpMode {
         // Update the variables
         if (driveOp.isDown(GamepadKeys.Button.A)) {
             intake.spin();
+        } else if(driveOp.isDown(GamepadKeys.Button.B)) {
+            intake.Rspin();
         } else {
             intake.spinFor5Seconds();
         }
@@ -93,12 +102,38 @@ public class TeleOp extends OpMode {
 //        transferButton.whenPressed(new Transfer(deposit));
 
         // Flips the pan over
-        Button flipButtom = new GamepadButton(toolOp, GamepadKeys.Button.A);
-        flipButtom.whenPressed(new Omelette(deposit));
+//        Button flipButtom = new GamepadButton(toolOp, GamepadKeys.Button.A);
+//        flipButtom.whenPressed(new Omelette(deposit));
 
-        // Serves
-        Button ServeButton = new GamepadButton(toolOp, GamepadKeys.Button.X);
-        ServeButton.whenPressed(new Serve(deposit));
+
+//        if(toolOp.getButton(GamepadKeys.Button.A)) {
+//            deposit.Gripper.turnToAngle(50);
+//        } else {
+//            deposit.Gripper.turnToAngle(140);
+//        }
+
+        if(toolOp.getButton(GamepadKeys.Button.X)) {
+            deposit.home();
+            commandRun = true;
+            deposit.safeTimer.reset();
+        }
+
+        if(commandRun) {
+            if(deposit.safeTimer.seconds() > 1 && deposit.safeTimer.seconds() < 2) {
+                deposit.Gripper.turnToAngle(50);
+            } else if(deposit.safeTimer.seconds() > 2 && deposit.safeTimer.seconds() < 3) {
+                deposit.safe();
+            } else if(deposit.safeTimer.seconds() > 3 && deposit.safeTimer.seconds() < 4) {
+                deposit.place();
+                commandRun = false;
+                }
+        }
+
+
+        // Reset
+        if(toolOp.getButton(GamepadKeys.Button.Y)) {
+            deposit.home();
+        }
 
 
         if(driveOp.getButton(GamepadKeys.Button.DPAD_UP)) {
@@ -108,17 +143,18 @@ public class TeleOp extends OpMode {
         }
 
 
-        if (toolOp.getButton(GamepadKeys.Button.DPAD_UP)) {
+        if(toolOp.getButton(GamepadKeys.Button.DPAD_UP)) {
             deposit.upSlides();
-        } else if (toolOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+        } else if(toolOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
             deposit.downSlides();
         } else {
             deposit.powerOffSlides();
         }
 
 
-        deposit.manualV4BControl(toolOp.getRightY(), telemetry);
-        deposit.manualWristControl(toolOp.getLeftY(), telemetry);
+        deposit.manualV4BControl(toolOp.getLeftY(), telemetry);
+        deposit.manualWristControl(toolOp.getRightY(), telemetry);
+
 
         telemetry.addData("Wrist Pos", deposit.Wrist.getAngle());
 //        telemetry.addData("Hang Pos", hang.Hang.getCurrentPosition());

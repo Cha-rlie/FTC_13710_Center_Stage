@@ -3,11 +3,13 @@ package org.firstinspires.ftc.teamcode.commands;
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.arcrobotics.ftclib.util.MathUtils;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 // Import Local Custom Classes
 import org.firstinspires.ftc.teamcode.hardware.Deposit;
+import org.firstinspires.ftc.teamcode.hardware.LinearRegression;
 
 
 public class Serve extends CommandBase {
@@ -15,7 +17,12 @@ public class Serve extends CommandBase {
     private final Deposit depositSubSystem;
     private int targetPos = 0;
     boolean operationFinished;
-    double increment;
+    double wantedLoc;
+    double startingLoc;
+    double wantedTime;
+    double slope;
+    double intercept;
+    int iteration;
 
     public Serve(Deposit deposit) {
         depositSubSystem = deposit;
@@ -24,7 +31,6 @@ public class Serve extends CommandBase {
     @Override
     public void initialize() {
         operationFinished = false;
-        increment = depositSubSystem.V4B1.getAngle();
     }
 
     @Override
@@ -34,17 +40,14 @@ public class Serve extends CommandBase {
         int safePos = 200;
         int uncertainty = 10;
 
+
         // Determine whether the outtake is past the safe rotation position
         if(currentLocation >= safePos-(uncertainty*2)) {
-            depositSubSystem.Wrist.turnToAngle(185);
+            depositSubSystem.Wrist.turnToAngle(36);
+            depositSubSystem.V4B1.turnToAngle(233);
+            depositSubSystem.V4B2.turnToAngle(233);
 
-            if(increment < 180) {
-                depositSubSystem.V4B1.rotateByAngle(1);
-                depositSubSystem.V4B2.rotateByAngle(1);
-                increment += 1;
-            } else {
-                operationFinished = true;
-            }
+            operationFinished = true;
 
         } else {
             depositSubSystem.DS1.motor.setTargetPosition(safePos);

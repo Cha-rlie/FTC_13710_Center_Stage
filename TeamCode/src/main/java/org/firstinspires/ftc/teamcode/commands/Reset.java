@@ -1,10 +1,8 @@
 package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 // Import Local Custom Classes
 import org.firstinspires.ftc.teamcode.hardware.Deposit;
@@ -16,6 +14,10 @@ import org.firstinspires.ftc.teamcode.hardware.Deposit;
 public class Reset extends CommandBase {
 
     private final Deposit depositSubSystem;
+    boolean operationFinished;
+    private ElapsedTime timer1 = new ElapsedTime();
+    boolean oneTime;
+    private double power = 0.5;
 
     public Reset(Deposit deposit) {
         depositSubSystem = deposit;
@@ -23,7 +25,8 @@ public class Reset extends CommandBase {
 
     @Override
     public void initialize() {
-
+        operationFinished = false;
+        oneTime = false;
     }
 
     @Override
@@ -32,20 +35,40 @@ public class Reset extends CommandBase {
                 + depositSubSystem.DS2.motor.getCurrentPosition())/2;
         int uncertainty = 10;
 
-        while (!depositSubSystem.withinUncertainty(currentLocation, depositSubSystem.min, uncertainty)) {
+        if (!depositSubSystem.withinUncertainty(currentLocation, depositSubSystem.min, uncertainty)) {
             depositSubSystem.DS1.motor.setTargetPosition(depositSubSystem.min);
             depositSubSystem.DS2.motor.setTargetPosition(depositSubSystem.min);
 
             depositSubSystem.DS1.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             depositSubSystem.DS2.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            depositSubSystem.DS1.motor.setPower(1);
-            depositSubSystem.DS2.motor.setPower(1);
+            depositSubSystem.DS1.motor.setPower(power);
+            depositSubSystem.DS2.motor.setPower(power);
+        } else {
+            if(!oneTime) {
+                depositSubSystem.Wrist.turnToAngle(120);
+                depositSubSystem.V4B1.turnToAngle(depositSubSystem.rampPosition);
+                depositSubSystem.V4B2.turnToAngle(depositSubSystem.rampPosition);
+
+                operationFinished = true;
+
+                timer1.reset();
+                oneTime = true;
+            }
         }
     }
 
     @Override
     public boolean isFinished() {
-        return true; // This will mean the initialise code will run just once which is what we want
+        if(operationFinished) {
+            if(timer1.seconds() > 1) {
+                depositSubSystem.Wrist.turnToAngle(depositSubSystem.defaultWrist);
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 }
