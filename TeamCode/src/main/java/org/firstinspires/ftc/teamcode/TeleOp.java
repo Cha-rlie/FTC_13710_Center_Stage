@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.commands.Reset;
 import org.firstinspires.ftc.teamcode.commands.Serve;
 import org.firstinspires.ftc.teamcode.hardware.Deposit;
 import org.firstinspires.ftc.teamcode.hardware.Drivebase;
+import org.firstinspires.ftc.teamcode.hardware.DroneLauncher;
 import org.firstinspires.ftc.teamcode.hardware.Hang;
 import org.firstinspires.ftc.teamcode.hardware.Intake;
 
@@ -35,11 +36,14 @@ public class TeleOp extends OpMode {
     public boolean willResetIMU = true;
     ElapsedTime timer = new ElapsedTime();
     boolean commandRun;
+    boolean IntakeOneTime = false;
+    boolean raised;
 
     // Declaring Commands
     private Deposit deposit;
     private Intake intake;
     private Hang hang;
+    private DroneLauncher shooter;
 
     public void init() {
         driveBase = new Drivebase(hardwareMap);
@@ -53,11 +57,14 @@ public class TeleOp extends OpMode {
         ));
         imu.resetYaw();
         commandRun = false;
+        raised = false;
+
         driveOp = new GamepadEx(gamepad1);
         toolOp = new GamepadEx(gamepad2);
         deposit = new Deposit(hardwareMap);
         intake = new Intake(hardwareMap, driveOp);
         hang = new Hang(hardwareMap);
+        shooter = new DroneLauncher(hardwareMap);
         telemetry.addLine("initialization complete");
         telemetry.update();
 
@@ -81,65 +88,83 @@ public class TeleOp extends OpMode {
         CommandScheduler.getInstance().run();
 
         // Run the drivebase with the driveOp gamepad
-        driveBase.userControlledDrive(driveOp, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+        driveBase.userControlledDrive(gamepad1, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+
         // Reset the imu if the driver deems it necessary
         if (gamepad1.guide) {
             imu.resetYaw();
             telemetry.addLine("Imu Reset");
         }
 
+
         // Update the variables
-        if (driveOp.isDown(GamepadKeys.Button.A)) {
-            intake.spin();
-        } else if(driveOp.isDown(GamepadKeys.Button.B)) {
+        if (toolOp.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5) {
+            intake.IntakeCover.turnToAngle(200);
+            deposit.V4B1.turnToAngle(90);
+            deposit.V4B2.turnToAngle(90);
+            if(!IntakeOneTime) {
+                intake.coverTimer.reset();
+                IntakeOneTime = true;
+            }
+
+            if(IntakeOneTime && intake.coverTimer.milliseconds() > 200) {
+                intake.spin();
+            }
+        } else if(toolOp.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5) {
             intake.Rspin();
         } else {
-            intake.spinFor5Seconds();
+            intake.intakeSpinner.motor.setPower(0);
+            intake.IntakeCover.turnToAngle(130);
+            IntakeOneTime = false;
         }
 
-        // Puts back to the transfer position
-//        Button transferButton = new GamepadButton(toolOp, GamepadKeys.Button.B);
-//        transferButton.whenPressed(new Transfer(deposit));
 
-        // Flips the pan over
-//        Button flipButtom = new GamepadButton(toolOp, GamepadKeys.Button.A);
-//        flipButtom.whenPressed(new Omelette(deposit));
+        if(gamepad2.guide) {
+            shooter.shoot();
+        }
 
+        // Release
+        if(toolOp.getButton(GamepadKeys.Button.A)) {
+            deposit.Gripper.turnToAngle(140);
+        }
 
-//        if(toolOp.getButton(GamepadKeys.Button.A)) {
-//            deposit.Gripper.turnToAngle(50);
-//        } else {
-//            deposit.Gripper.turnToAngle(140);
-//        }
-
+        // X goes to scoring position
         if(toolOp.getButton(GamepadKeys.Button.X)) {
-            deposit.home();
-            commandRun = true;
-            deposit.safeTimer.reset();
+            deposit.place();
         }
 
-        if(commandRun) {
-            if(deposit.safeTimer.seconds() > 1 && deposit.safeTimer.seconds() < 2) {
-                deposit.Gripper.turnToAngle(50);
-            } else if(deposit.safeTimer.seconds() > 2 && deposit.safeTimer.seconds() < 3) {
-                deposit.safe();
-            } else if(deposit.safeTimer.seconds() > 3 && deposit.safeTimer.seconds() < 4) {
-                deposit.place();
-                commandRun = false;
-                }
-        }
-
-
-        // Reset
+        // Y goes to transfer position
         if(toolOp.getButton(GamepadKeys.Button.Y)) {
             deposit.home();
         }
 
+        // B completes transfer
+        if(toolOp.getButton(GamepadKeys.Button.B)) {
+            commandRun = true;
+            deposit.safeTimer.reset();
+        }
 
-        if(driveOp.getButton(GamepadKeys.Button.DPAD_UP)) {
+        // Complex transfer command
+        if(commandRun) {
+            deposit.Wrist.turnToAngle(deposit.defaultWrist);
+            if(deposit.safeTimer.seconds() > 0 && deposit.safeTimer.seconds() < 1) {
+                deposit.V4B1.turnToAngle(deposit.rampPosition);
+                deposit.V4B2.turnToAngle(deposit.rampPosition);
+            } else if(deposit.safeTimer.seconds() > 1 && deposit.safeTimer.seconds() < 2) {
+                deposit.Gripper.turnToAngle(80);
+            } else if(deposit.safeTimer.seconds() > 2 && deposit.safeTimer.seconds() < 3) {
+                deposit.safe();
+                commandRun = false;
+            }
+        }
+
+
+        if(driveOp.getButton(GamepadKeys.Button.DPAD_UP ) || raised) {
             hang.raise();
+            raised = true;
         } else if (driveOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
             hang.lower();
+            raised = false;
         }
 
 
@@ -151,8 +176,10 @@ public class TeleOp extends OpMode {
             deposit.powerOffSlides();
         }
 
+        telemetry.addData("Speed Modifier: ", driveBase.speedModifier);
 
-        deposit.manualV4BControl(toolOp.getLeftY(), telemetry);
+
+        deposit.manualV4BControl(-toolOp.getLeftY(), telemetry);
         deposit.manualWristControl(toolOp.getRightY(), telemetry);
 
 

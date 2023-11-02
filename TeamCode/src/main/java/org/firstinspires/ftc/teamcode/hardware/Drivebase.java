@@ -7,60 +7,68 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Drivebase extends SubsystemBase {
 
     // Declare drivebase motor variables
-    MotorEx frontLeft;
-    MotorEx frontRight;
-    MotorEx rearLeft;
-    MotorEx rearRight;
-
-    // Declare the drivebase
-    MecanumDrive drivebase;
+    public DcMotorEx frontLeft;
+    public DcMotorEx frontRight;
+    public DcMotorEx rearLeft;
+    public DcMotorEx rearRight;
 
     // Declare variables
-    double speedModifier;
+    public double speedModifier;
 
     public Drivebase(HardwareMap hardwareMap) {
-        // Assign corresponding values to the MotorEx objects with the correct RPMs since they are GoBildas
-        frontLeft = new MotorEx(hardwareMap, "FrontLeft", Motor.GoBILDA.RPM_223);
-        frontLeft.setRunMode(Motor.RunMode.RawPower);
-        frontLeft.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontLeft = hardwareMap.get(DcMotorEx.class, "FrontLeft");
+        frontRight = hardwareMap.get(DcMotorEx.class, "FrontRight");
+        rearLeft = hardwareMap.get(DcMotorEx.class, "RearLeft");
+        rearRight = hardwareMap.get(DcMotorEx.class, "RearRight");
 
-        frontRight = new MotorEx(hardwareMap, "FrontRight", Motor.GoBILDA.RPM_223);
-        frontRight.setRunMode(Motor.RunMode.RawPower);
-        frontRight.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontLeft.setDirection(DcMotorEx.Direction.REVERSE);
+        rearLeft.setDirection(DcMotorEx.Direction.REVERSE);
 
-        rearLeft =  new MotorEx(hardwareMap, "RearLeft", Motor.GoBILDA.RPM_223);
-        rearLeft.setRunMode(Motor.RunMode.RawPower);
-        rearLeft.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        rearRight = new MotorEx(hardwareMap, "RearRight", Motor.GoBILDA.RPM_223);
-        rearRight.setRunMode(Motor.RunMode.RawPower);
-        rearRight.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        // Assign a new mecanum drivebase to the driveBase variable
-        drivebase = new MecanumDrive(frontLeft, frontRight, rearLeft, rearRight);
+        frontLeft.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        rearLeft.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        rearRight.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
     }
 
-    public void userControlledDrive(GamepadEx driveOp, double heading) {
-        if (driveOp.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).get()) {
-            speedModifier = 0.35;
-        } else if (driveOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).get()) {
+    public void userControlledDrive(Gamepad gamepad1, double botHeading) {
+        double speedModifier = 0.6; //Used to be 0.7
+
+        if (gamepad1.left_bumper) {
+            speedModifier = 0.3;
+        } else if (gamepad1.right_bumper) {
             speedModifier = 1;
-        } else {
-            speedModifier = 0.7;
         }
-        // Drive the robot using gamepad input in a field-centric way
-        drivebase.driveFieldCentric(-driveOp.getLeftX()*speedModifier,
-                -driveOp.getLeftY()*speedModifier,
-                -driveOp.getRightX()*speedModifier,
-                heading);
+
+        double y = -gamepad1.right_stick_y; // Remember, Y stick value is reversed
+        double x = gamepad1.right_stick_x * 2;
+        double rx = gamepad1.left_stick_x;
+
+        // Rotate the movement direction counter to the bot's rotation
+        double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+        double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
+
+        rotX = rotX * 1.1;  // Counteract imperfect strafing
+
+        // Denominator is the largest motor power (absolute value) or 1
+        // This ensures all the powers maintain the same ratio,
+        // but only if at least one is out of the range [-1, 1]
+        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+        double frontLeftPower = (rotY + rotX + rx) / denominator;
+        double backLeftPower = (rotY - rotX + rx) / denominator;
+        double frontRightPower = (rotY - rotX - rx) / denominator;
+        double backRightPower = (rotY + rotX - rx) / denominator;
+
+        frontLeft.setPower(frontLeftPower * speedModifier);
+        rearLeft.setPower(backLeftPower * speedModifier);
+        frontRight.setPower(frontRightPower * speedModifier);
+        rearRight.setPower(backRightPower * speedModifier);
     }
-
-    // More Functions Could be Added Here (Especially for Auto)
-
 }
