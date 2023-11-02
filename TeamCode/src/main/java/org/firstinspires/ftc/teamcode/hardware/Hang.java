@@ -27,7 +27,7 @@ public class Hang extends SubsystemBase {
     }
 
     public void raise() {
-        Hang.motor.setPower(-0.7);
+        Hang.motor.setPower(-0.5);
     }
 
     public void lower() {

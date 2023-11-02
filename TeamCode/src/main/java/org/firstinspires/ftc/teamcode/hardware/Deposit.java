@@ -32,8 +32,8 @@ public class Deposit extends SubsystemBase {
     public int min = 0;
     public int max = 760;
     public double power = 1;
-    public double defaultWrist = 207; //180
-    public double rampPosition = 44;  //50
+    public double defaultWrist = 209; //180
+    public double rampPosition = 49;  //50
     public ElapsedTime safeTimer = new ElapsedTime();
 
     public Deposit(HardwareMap hardwareMap) {
@@ -55,8 +55,8 @@ public class Deposit extends SubsystemBase {
 
         V4B1.setInverted(true);
 
-        V4B1.turnToAngle(80);
-        V4B2.turnToAngle(80);
+        V4B1.turnToAngle(90);
+        V4B2.turnToAngle(90);
 
         Wrist.turnToAngle(defaultWrist);
         Gripper.turnToAngle(140);
@@ -98,8 +98,8 @@ public class Deposit extends SubsystemBase {
     }
 
     public void home() {
-        V4B1.turnToAngle(rampPosition);
-        V4B2.turnToAngle(rampPosition);
+        V4B1.turnToAngle(55);
+        V4B2.turnToAngle(55);
 
         Wrist.turnToAngle(defaultWrist);
         Gripper.turnToAngle(140);
@@ -140,8 +140,17 @@ public class Deposit extends SubsystemBase {
     }
 
     public void powerOffSlides() {
-        DS1.motor.setPower(0);
-        DS2.motor.setPower(0);
+//        DS1.motor.setPower(0);
+//        DS2.motor.setPower(0);
+
+        DS1.motor.setTargetPosition(DS1.getCurrentPosition());
+        DS2.motor.setTargetPosition(DS2.getCurrentPosition());
+
+        DS1.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        DS2.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        DS1.motor.setPower(power);
+        DS2.motor.setPower(power);
     }
 
     public boolean withinUncertainty(double currentPos, double wantedPos, double range) {
