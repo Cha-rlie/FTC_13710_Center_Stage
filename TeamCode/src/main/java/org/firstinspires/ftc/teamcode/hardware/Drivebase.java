@@ -12,10 +12,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Drivebase extends SubsystemBase {
 
     // Declare drivebase motor variables
-    MotorEx frontLeft;
-    MotorEx frontRight;
-    MotorEx rearLeft;
-    MotorEx rearRight;
+    public MotorEx frontLeft;
+    public MotorEx frontRight;
+    public MotorEx rearLeft;
+    public MotorEx rearRight;
 
     // Declare the drivebase
     MecanumDrive drivebase;
