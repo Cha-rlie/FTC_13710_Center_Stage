@@ -41,7 +41,7 @@ public class DriveConstants {
     /*
      * These are physical constants that can be determined from your robot (including the track
      * width; it will be tune empirically later although a rough estimate is important). Users are
-     * free to chose whichever linear distance unit they would like so long as it is consistently
+     * free to chose whichever linear distance unit they would like so long as it isr consistently
      * used. The default values were selected with inches in mind. Road runner uses radians for
      * angular distances although most angular parameters are wrapped in Math.toRadians() for
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
@@ -90,8 +90,9 @@ public class DriveConstants {
      */
     public static double MAX_VEL = 88.2631293784093367624276581;
     public static double MAX_ACCEL = 88.2631293784093367624276581;
-    public static double MAX_ANG_VEL = Math.toRadians(60.713828813559324);
-    public static double MAX_ANG_ACCEL = Math.toRadians(60.713828813559324);
+
+    public static double MAX_ANG_VEL = Math.toRadians(357.1401695); //60.713828813559324
+    public static double MAX_ANG_ACCEL = Math.toRadians(357.1401695);
 
     /*
      * Adjust the orientations here to match your robot. See the FTC SDK documentation for details.

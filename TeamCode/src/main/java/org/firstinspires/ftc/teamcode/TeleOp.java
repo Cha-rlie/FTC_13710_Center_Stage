@@ -189,10 +189,12 @@ public class TeleOp extends OpMode {
         telemetry.addData("Slide Pos 1", deposit.DS1.motor.getCurrentPosition());
         telemetry.addData("Slide Pos 2", deposit.DS2.motor.getCurrentPosition());
         telemetry.addData("Heading", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+
         telemetry.addData("FrontLeft", driveBase.frontLeft.getCurrentPosition());
         telemetry.addData("FrontRight", driveBase.frontRight.getCurrentPosition());
         telemetry.addData("RearLeft", driveBase.rearLeft.getCurrentPosition());
         telemetry.addData("RearRight", driveBase.rearRight.getCurrentPosition());
+
         telemetry.update();
     }
 }

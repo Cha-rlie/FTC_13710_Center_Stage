@@ -19,6 +19,9 @@ public class Drivebase extends SubsystemBase {
     public DcMotorEx rearLeft;
     public DcMotorEx rearRight;
 
+    // Declare the drivebase
+    MecanumDrive drivebase;
+
     // Declare variables
     public double speedModifier;
 
