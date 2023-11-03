@@ -125,7 +125,7 @@ public class TeleOp extends OpMode {
 
         // Release
         if(toolOp.getButton(GamepadKeys.Button.A)) {
-            deposit.Gripper.turnToAngle(200);
+            deposit.Gripper.turnToAngle(deposit.openPosition);
         }
 
         // X goes to scoring position
@@ -151,7 +151,7 @@ public class TeleOp extends OpMode {
                 deposit.V4B1.turnToAngle(deposit.rampPosition);
                 deposit.V4B2.turnToAngle(deposit.rampPosition);
             } else if(deposit.safeTimer.seconds() > 0.5 && deposit.safeTimer.seconds() < 1) {
-                deposit.Gripper.turnToAngle(290);
+                deposit.Gripper.turnToAngle(deposit.closedPosition);
             } else if(deposit.safeTimer.seconds() > 1 && deposit.safeTimer.seconds() < 1.5) {
                 deposit.safe();
             } else if(deposit.safeTimer.seconds() > 1.5) {
@@ -160,13 +160,13 @@ public class TeleOp extends OpMode {
             }
         }
 
-        if(driveOp.getButton(GamepadKeys.Button.DPAD_UP ) || raised) {
-            hang.raise();
-            raised = true;
-        } else if (driveOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
-            hang.lower();
-            raised = false;
-        }
+//        if(driveOp.getButton(GamepadKeys.Button.DPAD_UP ) || raised) {
+//            hang.raise();
+//            raised = true;
+//        } else if (driveOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+//            hang.lower();
+//            raised = false;
+//        }
 
 
         if(toolOp.getButton(GamepadKeys.Button.DPAD_UP)) {

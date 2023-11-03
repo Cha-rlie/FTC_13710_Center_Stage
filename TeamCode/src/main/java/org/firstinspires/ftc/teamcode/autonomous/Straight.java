@@ -20,9 +20,9 @@ import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 import org.openftc.easyopencv.OpenCvCamera;
 
-@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Blue Back Auto", group = "Blue Autos")
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Straight Drive Auto")
 
-public class BlueBackAuto extends OpMode {
+public class Straight extends OpMode {
 
     // Create Prop Location-Related Variables
     enum Locations {LEFT, FRONT, MIDDLE}
@@ -78,68 +78,36 @@ public class BlueBackAuto extends OpMode {
         driveBase.rearLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         driveBase.rearRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        // Complete transfer command
-
-        deposit.safeTimer.reset();
-
-        boolean commandFinished = false;
-
-        while(!commandFinished) {
-            deposit.Wrist.turnToAngle(deposit.defaultWrist);
-            if(deposit.safeTimer.seconds() > 0 && deposit.safeTimer.seconds() < 0.5) {
-                deposit.V4B1.turnToAngle(deposit.rampPosition);
-                deposit.V4B2.turnToAngle(deposit.rampPosition);
-            } else if(deposit.safeTimer.seconds() > 0.5 && deposit.safeTimer.seconds() < 1) {
-                deposit.Gripper.turnToAngle(deposit.closedPosition);
-            } else if(deposit.safeTimer.seconds() > 1 && deposit.safeTimer.seconds() < 1.5) {
-                deposit.safe();
-            } else if(deposit.safeTimer.seconds() > 1.5) {
-                deposit.visible();
-                commandFinished = true;
-            }
-        }
-
-//        // Set-up the camera view
-//        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-//        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam"), cameraMonitorViewId);
-//
-//        aprilTagDetector = new AprilTagCameraDetection(telemetry, camera, tagsToSearchFor);
-//
-//        // Get the desired parking location as a string
-//        aprilTagLocation = aprilTagDetector.getDetectedSide(telemetry);
-
-
     }
 
     public void start() {
         int tileLength = 61;
 
-        telemetry.addLine("start has run");
-
-//        driveBase.drive(100, 0, 0.5, telemetry, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
-        driveBase.backwards(-tileLength, 0, -0.8, telemetry, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
-
-        Timer.reset();
-        while(Timer.seconds() < 3) {
-            driveBase.rotate(90, telemetry, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES), 1);
-        }
-
-        driveBase.resetEncoders();
-        driveBase.backwards(-tileLength, 90, -0.8, telemetry, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
-
-        while(Timer.seconds() < 3) {
-            driveBase.rotate(90, telemetry, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES), 1);
-        }
-
         deposit.place();
 
-        telemetry.update();
+//        driveBase.drive(100, 0, 0.5, telemetry, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+        driveBase.forward((tileLength*2+20), 0, 1, telemetry, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+
+        Timer.reset();
 
     }
 
     public void loop() {
         telemetry.addData("Distance Travelled: ", driveBase.getDistanceTravelled());
+
+
+        if(Timer.seconds() < 5) {
+            intake.Rspin();
+        } else {
+            intake.intakeSpinner.motor.setPower(0);
+        }
+
+        if(Timer.seconds() > 5) {
+            driveBase.rotate(-90, telemetry, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES), 1);
+        }
+
         telemetry.update();
+
 
     }
 

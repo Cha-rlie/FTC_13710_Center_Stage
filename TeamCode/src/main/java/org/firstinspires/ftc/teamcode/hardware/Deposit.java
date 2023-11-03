@@ -34,6 +34,8 @@ public class Deposit extends SubsystemBase {
     public double power = 1;
     public double defaultWrist = 205; //180
     public double rampPosition = 51;  //50
+    public int closedPosition = 110;
+    public int openPosition = 30;
     public ElapsedTime safeTimer = new ElapsedTime();
 
     public Deposit(HardwareMap hardwareMap) {
@@ -51,7 +53,7 @@ public class Deposit extends SubsystemBase {
         V4B1 = new SimpleServo(hardwareMap, "V4B1", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
         V4B2 = new SimpleServo(hardwareMap, "V4B2", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
         Wrist = new SimpleServo(hardwareMap, "W", 0, 260, AngleUnit.DEGREES);
-        Gripper = new SimpleServo(hardwareMap, "G", 0, 260, AngleUnit.DEGREES);
+        Gripper = new SimpleServo(hardwareMap, "G", 0, 180, AngleUnit.DEGREES);
 
         V4B1.setInverted(true);
 
@@ -59,7 +61,7 @@ public class Deposit extends SubsystemBase {
         V4B2.turnToAngle(80);
 
         Wrist.turnToAngle(defaultWrist);
-        Gripper.turnToAngle(200);
+        Gripper.turnToAngle(openPosition);
 
         resetPosition();
     }
@@ -102,7 +104,7 @@ public class Deposit extends SubsystemBase {
         V4B2.turnToAngle(55);
 
         Wrist.turnToAngle(defaultWrist);
-        Gripper.turnToAngle(140);
+        Gripper.turnToAngle(openPosition);
     }
 
     public void safe() {
