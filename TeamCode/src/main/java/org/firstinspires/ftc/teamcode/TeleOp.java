@@ -125,7 +125,7 @@ public class TeleOp extends OpMode {
 
         // Release
         if(toolOp.getButton(GamepadKeys.Button.A)) {
-            deposit.Gripper.turnToAngle(140);
+            deposit.Gripper.turnToAngle(200);
         }
 
         // X goes to scoring position
@@ -147,17 +147,18 @@ public class TeleOp extends OpMode {
         // Complex transfer command
         if(commandRun) {
             deposit.Wrist.turnToAngle(deposit.defaultWrist);
-            if(deposit.safeTimer.seconds() > 0 && deposit.safeTimer.seconds() < 1) {
+            if(deposit.safeTimer.seconds() > 0 && deposit.safeTimer.seconds() < 0.5) {
                 deposit.V4B1.turnToAngle(deposit.rampPosition);
                 deposit.V4B2.turnToAngle(deposit.rampPosition);
-            } else if(deposit.safeTimer.seconds() > 1 && deposit.safeTimer.seconds() < 2) {
-                deposit.Gripper.turnToAngle(80);
-            } else if(deposit.safeTimer.seconds() > 2 && deposit.safeTimer.seconds() < 3) {
+            } else if(deposit.safeTimer.seconds() > 0.5 && deposit.safeTimer.seconds() < 1) {
+                deposit.Gripper.turnToAngle(290);
+            } else if(deposit.safeTimer.seconds() > 1 && deposit.safeTimer.seconds() < 1.5) {
                 deposit.safe();
+            } else if(deposit.safeTimer.seconds() > 1.5) {
+                deposit.visible();
                 commandRun = false;
             }
         }
-
 
         if(driveOp.getButton(GamepadKeys.Button.DPAD_UP ) || raised) {
             hang.raise();
@@ -188,6 +189,10 @@ public class TeleOp extends OpMode {
         telemetry.addData("Slide Pos 1", deposit.DS1.motor.getCurrentPosition());
         telemetry.addData("Slide Pos 2", deposit.DS2.motor.getCurrentPosition());
         telemetry.addData("Heading", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+        telemetry.addData("FrontLeft", driveBase.frontLeft.getCurrentPosition());
+        telemetry.addData("FrontRight", driveBase.frontRight.getCurrentPosition());
+        telemetry.addData("RearLeft", driveBase.rearLeft.getCurrentPosition());
+        telemetry.addData("RearRight", driveBase.rearRight.getCurrentPosition());
         telemetry.update();
     }
 }

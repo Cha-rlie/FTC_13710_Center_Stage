@@ -39,7 +39,7 @@ public class Drivebase extends SubsystemBase {
     }
 
     public void userControlledDrive(Gamepad gamepad1, double botHeading) {
-        double speedModifier = 0.6; //Used to be 0.7
+        double speedModifier = 0.9; //Used to be 0.7
 
         if (gamepad1.left_bumper) {
             speedModifier = 0.3;
@@ -48,7 +48,7 @@ public class Drivebase extends SubsystemBase {
         }
 
         double y = -gamepad1.right_stick_y; // Remember, Y stick value is reversed
-        double x = gamepad1.right_stick_x * 2;
+        double x = gamepad1.right_stick_x;
         double rx = gamepad1.left_stick_x;
 
         // Rotate the movement direction counter to the bot's rotation

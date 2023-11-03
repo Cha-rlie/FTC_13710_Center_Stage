@@ -32,8 +32,8 @@ public class Deposit extends SubsystemBase {
     public int min = 0;
     public int max = 760;
     public double power = 1;
-    public double defaultWrist = 209; //180
-    public double rampPosition = 49;  //50
+    public double defaultWrist = 205; //180
+    public double rampPosition = 51;  //50
     public ElapsedTime safeTimer = new ElapsedTime();
 
     public Deposit(HardwareMap hardwareMap) {
@@ -55,11 +55,11 @@ public class Deposit extends SubsystemBase {
 
         V4B1.setInverted(true);
 
-        V4B1.turnToAngle(90);
-        V4B2.turnToAngle(90);
+        V4B1.turnToAngle(80);
+        V4B2.turnToAngle(80);
 
         Wrist.turnToAngle(defaultWrist);
-        Gripper.turnToAngle(140);
+        Gripper.turnToAngle(200);
 
         resetPosition();
     }
@@ -109,6 +109,12 @@ public class Deposit extends SubsystemBase {
         V4B1.turnToAngle(60);
         V4B2.turnToAngle(60);
         Wrist.turnToAngle(240);
+    }
+
+    public void visible() {
+        V4B1.turnToAngle(85);
+        V4B2.turnToAngle(85);
+        Wrist.turnToAngle(210);
     }
 
     public void place() {
