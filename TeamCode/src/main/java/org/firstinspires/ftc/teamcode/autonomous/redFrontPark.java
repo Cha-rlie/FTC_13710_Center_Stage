@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.autonomous;
 
 import static java.lang.Thread.sleep;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -20,19 +22,10 @@ import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 import org.openftc.easyopencv.OpenCvCamera;
 
-@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Straight Drive Auto")
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "PARK Red Front", group = "Red Autos")
 
-public class Straight extends OpMode {
+public class redFrontPark extends OpMode {
 
-    // Create Prop Location-Related Variables
-    enum Locations {LEFT, FRONT, MIDDLE}
-    private Locations propLocation;
-
-    // Create AprilTag-Related Variables
-    AprilTagCameraDetection aprilTagDetector;
-    private OpenCvCamera camera;
-    private String aprilTagLocation;
-    private int[] tagsToSearchFor = new int[]{1, 2, 3};
     public ElapsedTime Timer = new ElapsedTime();
 
     Drivebase driveBase;
@@ -40,7 +33,7 @@ public class Straight extends OpMode {
     GamepadEx driveOp;
     GamepadEx toolOp;
     SampleMecanumDrive drive;
-    TrajectorySequence autoJustParkMiddle;
+    TrajectorySequence redFrontPark;
 
     // Declaring Commands
     private Deposit deposit;
@@ -68,47 +61,22 @@ public class Straight extends OpMode {
         telemetry.addLine("initialization complete");
         telemetry.update();
 
-        driveBase.frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        driveBase.frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        driveBase.rearLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        driveBase.rearRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        driveBase.frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        driveBase.frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        driveBase.rearLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        driveBase.rearRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        TrajectorySequence redFrontPark = drive.trajectorySequenceBuilder(new Pose2d(-36.70, -62.80, Math.toRadians(90.00)))
+                .splineTo(new Vector2d(-39.33, -32.57), Math.toRadians(90.00))
+                .splineTo(new Vector2d(62.99, -11.17), Math.toRadians(4.70))
+                .build();
 
     }
 
     public void start() {
+        drive.followTrajectorySequence(redFrontPark);
 
-
-        deposit.visible();
-
-//        driveBase.drive(100, 0, 0.5, telemetry, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
-
-
-        Timer.reset();
-
+        intake.Rspin();
     }
 
     public void loop() {
-        int tileLength = 61;
-
-        telemetry.addData("Timer: ", Timer.seconds());
-
-        driveBase.forward((tileLength*2), 0, 1, telemetry, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
-
-        if(Timer.seconds() > 5 && Timer.seconds() < 10) {
-            intake.Rspin();
-        }
-
-        if(Timer.seconds() > 10) {
-            intake.intakeSpinner.motor.setPower(0);
-        }
-
-        telemetry.update();
-
 
     }
 

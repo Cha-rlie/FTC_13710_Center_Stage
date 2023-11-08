@@ -22,6 +22,7 @@ public class Intake extends SubsystemBase {
     public Boolean intakeCurrentlySpinning = false;
     private GamepadEx toolOp;
     private Timer timer = new Timer(5, TimeUnit.SECONDS);
+    public ElapsedTime Timer = new ElapsedTime();
     public ServoEx IntakeCover;
     public ElapsedTime coverTimer = new ElapsedTime();
 
@@ -36,14 +37,15 @@ public class Intake extends SubsystemBase {
     }
 
     public void spin() {
-        intakeSpinner.set(-1);
+        intakeSpinner.set(-0.8);
         intakeCurrentlySpinning = true;
     }
 
     public void Rspin() {
-        intakeSpinner.set(1);
+        intakeSpinner.set(0.8);
         intakeCurrentlySpinning = true;
     }
+
 
     public void manualCoverControl(double angle, Telemetry telemetry) {
         int scaling = 8;

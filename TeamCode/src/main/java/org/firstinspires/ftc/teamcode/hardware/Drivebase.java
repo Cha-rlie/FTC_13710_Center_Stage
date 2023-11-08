@@ -60,7 +60,7 @@ public class Drivebase extends SubsystemBase {
         double distancedTravelled;
         double originalPower = power;
 
-        while(currentTicks < requiredTicks) {
+        if(currentTicks < requiredTicks) {
             rotate(heading, telemetry, botHeading, 1);
             currentTicks = frontLeft.getCurrentPosition();
             distancedTravelled = currentTicks * distancePerTick;
@@ -68,19 +68,21 @@ public class Drivebase extends SubsystemBase {
             telemetry.update();
 
             if (distanceCM - distancedTravelled < START_DRIVE_SLOWDOWN_AT_CM) {
-                power = RobotUtil.scaleVal(distanceCM - distancedTravelled, 0, START_DRIVE_SLOWDOWN_AT_CM, 0.1, originalPower);
+                power = RobotUtil.scaleVal(distanceCM - distancedTravelled, 0, START_DRIVE_SLOWDOWN_AT_CM, 0.2, originalPower);
             }
 
             frontLeft.setPower(power);
             frontRight.setPower(power);
             rearLeft.setPower(power);
             rearRight.setPower(power);
+        } else {
+            frontLeft.setPower(0);
+            frontRight.setPower(0);
+            rearLeft.setPower(0);
+            rearRight.setPower(0);
         }
 
-        frontLeft.setPower(0);
-        frontRight.setPower(0);
-        rearLeft.setPower(0);
-        rearRight.setPower(0);
+
     }
 
     public void backwards(int distanceCM, int heading, double power, Telemetry telemetry, double botHeading) {
