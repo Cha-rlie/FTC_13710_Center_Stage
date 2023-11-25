@@ -85,7 +85,7 @@ public class TeleOp extends OpMode {
 
     public void loop() {
         // This must be called from the function that loops in the opmode for everything to run
-        CommandScheduler.getInstance().run();
+        //CommandScheduler.getInstance().run();
 
         // Run the drivebase with the driveOp gamepad
         driveBase.userControlledDrive(gamepad1, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
@@ -194,7 +194,6 @@ public class TeleOp extends OpMode {
         telemetry.addData("FrontRight", driveBase.frontRight.getCurrentPosition());
         telemetry.addData("RearLeft", driveBase.rearLeft.getCurrentPosition());
         telemetry.addData("RearRight", driveBase.rearRight.getCurrentPosition());
-
         telemetry.update();
     }
 }

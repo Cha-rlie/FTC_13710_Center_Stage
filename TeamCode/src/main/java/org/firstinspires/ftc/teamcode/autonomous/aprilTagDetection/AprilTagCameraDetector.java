@@ -28,7 +28,10 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-public class AprilTagCameraDetection
+// Import Locations Object from propLocationDetector
+import org.firstinspires.ftc.teamcode.autonomous.propLocationDetection.propLocationDetector.Locations;
+
+public class AprilTagCameraDetector
 {
 
     public AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -54,7 +57,7 @@ public class AprilTagCameraDetection
 
     AprilTagDetection tagOfInterest = null;
 
-    public AprilTagCameraDetection(Telemetry telemetry, OpenCvCamera camera, int[] tagsToSearchFor) {
+    public AprilTagCameraDetector(Telemetry telemetry, OpenCvCamera camera, int[] tagsToSearchFor) {
 
         // Assign parameter tag values to locations
         LEFT = tagsToSearchFor[0];
@@ -85,7 +88,7 @@ public class AprilTagCameraDetection
 
     }
 
-    public String getDetectedSide (Telemetry telemetry) {
+    public Locations getDetectedSide (Telemetry telemetry) {
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
 
             if(currentDetections.size() != 0)
@@ -107,10 +110,10 @@ public class AprilTagCameraDetection
                     telemetry.addLine("Tag of interest is in sight!\n\nLocation data:");
                     telemetry.addLine(String.format("\nDetected tag ID=%d", tagOfInterest.id));
 
-                    if (tagOfInterest.id == LEFT) {telemetry.addLine("LEFT");return "LEFT";}
-                    else if (tagOfInterest.id == MIDDLE) {telemetry.addLine("MIDDLE");return "MIDDLE";}
-                    else if (tagOfInterest.id == RIGHT) {telemetry.addLine("RIGHT");return "RIGHT";}
-                    else {return "NOT FOUND";}
+                    if (tagOfInterest.id == LEFT) {telemetry.addLine("LEFT");return Locations.LEFT;}
+                    else if (tagOfInterest.id == MIDDLE) {telemetry.addLine("MIDDLE");return Locations.FRONT;}
+                    else if (tagOfInterest.id == RIGHT) {telemetry.addLine("RIGHT");return Locations.RIGHT;}
+                    else {return Locations.NOT_FOUND;}
 
                 }
                 else
@@ -131,7 +134,7 @@ public class AprilTagCameraDetection
             }
             else
             {
-                return "NOT FOUND";
+                return Locations.NOT_FOUND;
 
                 /*
                 telemetry.addLine("Don't see tag of interest :(");
@@ -156,7 +159,7 @@ public class AprilTagCameraDetection
          * during the init loop.
          */
 
-        return "NOT FOUND";
+        return Locations.NOT_FOUND;
     }
 
 }
