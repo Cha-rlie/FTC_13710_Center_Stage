@@ -11,6 +11,7 @@ import org.openftc.easyopencv.OpenCvCamera;
 
 // Import RoadRunner Classes
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -43,8 +44,8 @@ public class FrontAutoParent {
     double startY;
     int startHeading;
     TrajectorySequence chosenTeamPropScoringLocationTrajectory;
-    TrajectoryVelocityConstraint halfSpeed;
-    TrajectoryAccelerationConstraint halfAcceleration;
+    TrajectoryVelocityConstraint slowerVelocity;
+    TrajectoryAccelerationConstraint normalAcceleration;
 
     // Declare RoadRunner Trajectory Sequences
     TrajectorySequence driveToLeftTeamPropScoringPosition;
@@ -70,12 +71,12 @@ public class FrontAutoParent {
 
         // Assign and set-up the RoadRunner Mecanum Drive
         driveBase = new SampleMecanumDrive(hardwareMap);
-        startX = -37;
-        startY = 60* alianceAdjustor;
-        startHeading = 90* alianceAdjustor;
+        startX = 37;
+        startY = 60*alianceAdjustor;
+        startHeading = 90*alianceAdjustor;
         driveBase.setPoseEstimate(new Pose2d(startX, startY, Math.toRadians(startHeading)));
-        halfSpeed = SampleMecanumDrive.getVelocityConstraint(45*0.8, Math.toRadians(130), 14.0011);
-        halfAcceleration = SampleMecanumDrive.getAccelerationConstraint(68);
+        slowerVelocity = SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL*0.8, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
+        normalAcceleration = SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL);
 
     }
 
@@ -119,15 +120,14 @@ public class FrontAutoParent {
                 .build();
 
         driveToBackdrop = driveBase.trajectorySequenceBuilder(chosenTeamPropScoringLocationTrajectory.end())
+                // Uncomment the top line to allow the robot to re-orientate it's angle to how it started to avoid bizare splines, etc.
+                // If this is done, make sure to change the next line's heading to startHeading
+                //.turn(-1*(chosenTeamPropScoringLocationTrajectory.end().getHeading()-startHeading))
                 .splineToConstantHeading(new Vector2d(0+startX, (-33*alianceAdjustor)+startY), Math.toRadians(driveBase.getPoseEstimate().getHeading()))
                 .turn(Math.toRadians(90*alianceAdjustor))
-                .splineToConstantHeading(new Vector2d(0+startX, (-35*alianceAdjustor)+startY), Math.toRadians(180)) //Turns counter-clockwise
+                .splineToConstantHeading(new Vector2d(0+startX, (-35*alianceAdjustor)+startY), Math.toRadians(180))
                 .splineToConstantHeading(new Vector2d(41+startX, (-35*alianceAdjustor)+startY), Math.toRadians(180))
                 .splineToConstantHeading(new Vector2d(65+startX,(-15*alianceAdjustor)+startY), Math.toRadians(180))
-                //.lineTo(new Vector2d(0, -58))
-                //.turn(Math.toRadians(90))
-                //.lineTo(new Vector2d(83, -52))
-                //.forward(90)
                 .build();
 
         driveToNextAprilTag = driveBase.trajectorySequenceBuilder(driveBase.getPoseEstimate())

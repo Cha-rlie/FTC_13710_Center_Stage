@@ -11,6 +11,7 @@ import org.openftc.easyopencv.OpenCvCamera;
 
 // Import RoadRunner Classes
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -38,12 +39,13 @@ public class BackAutoParent {
 
     // Declare Movement-Related Variables
     SampleMecanumDrive driveBase;
+    int alianceAdjustor;
     double startX;
     double startY;
     int startHeading;
     TrajectorySequence chosenTeamPropScoringLocationTrajectory;
-    TrajectoryVelocityConstraint halfSpeed;
-    TrajectoryAccelerationConstraint halfAcceleration;
+    TrajectoryVelocityConstraint slowerVelocity;
+    TrajectoryAccelerationConstraint normalAcceleration;
 
     // Declare RoadRunner Trajectory Sequences
     TrajectorySequence driveToLeftTeamPropScoringPosition;
@@ -60,17 +62,21 @@ public class BackAutoParent {
 
         if (ALIANCE_COLOR.equals("BLUE")) {
             tagsToSearchFor = new int[]{1, 2, 3};
-        } else {tagsToSearchFor = new int[]{4, 5, 6};}
+            alianceAdjustor = 1;
+        } else {
+            tagsToSearchFor = new int[]{4, 5, 6};
+            alianceAdjustor = -1;
+        }
 
 
         // Assign and set-up the RoadRunner Mecanum Drive
         driveBase = new SampleMecanumDrive(hardwareMap);
-        startX = -37; //-36;
-        startY = 60; //61;
-        startHeading = 90;
+        startX = -37;
+        startY = 60*alianceAdjustor;
+        startHeading = 90*alianceAdjustor;
         driveBase.setPoseEstimate(new Pose2d(startX, startY, Math.toRadians(startHeading)));
-        halfSpeed = SampleMecanumDrive.getVelocityConstraint(45*0.8, Math.toRadians(130), 14.0011);
-        halfAcceleration = SampleMecanumDrive.getAccelerationConstraint(68);
+        slowerVelocity = SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL*0.8, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
+        normalAcceleration = SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL);
 
     }
 
@@ -101,49 +107,44 @@ public class BackAutoParent {
         telemetry.update();
         // TrajectorySequences to position the robot for scoring the purple pixel with the team prop
         driveToLeftTeamPropScoringPosition = driveBase.trajectorySequenceBuilder(driveBase.getPoseEstimate())
-                .back(15)
-                .turn(-30)
+                .lineTo(new Vector2d(startX, startY-(15*alianceAdjustor)))
+                .turn(30*alianceAdjustor)
                 .build();
         driveToFrontTeamPropScoringPosition = driveBase.trajectorySequenceBuilder(driveBase.getPoseEstimate())
-                .back(25)
+                .lineTo(new Vector2d(startX, startY-(25*alianceAdjustor)))
                 .turn(180)
                 .build();
         driveToRightTeamPropScoringPosition = driveBase.trajectorySequenceBuilder(driveBase.getPoseEstimate())
-                .back(15)
-                .turn(-30)
+                .lineTo(new Vector2d(startX, startY-(15*alianceAdjustor)))
+                .turn(-30*alianceAdjustor)
                 .build();
 
         driveToBackdrop = driveBase.trajectorySequenceBuilder(chosenTeamPropScoringLocationTrajectory.end())
-                .splineToConstantHeading(new Vector2d(0+startX, -33+startY), Math.toRadians(driveBase.getPoseEstimate().getHeading()))
-                .turn(Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(0+startX, -35+startY), Math.toRadians(180)) //Turns counter-clockwise
-                .splineToConstantHeading(new Vector2d(41+startX, -35+startY), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(65+startX,-15+startY), Math.toRadians(180))
-                //.lineTo(new Vector2d(0, -58))
-                //.turn(Math.toRadians(90))
-                //.lineTo(new Vector2d(83, -52))
-                //.forward(90)
+                // The top line rotates the robot by the required amount so it faces 180
+                .turn(startHeading-(-1*(chosenTeamPropScoringLocationTrajectory.end().getHeading()-startHeading)))
+                .lineToConstantHeading(new Vector2d(startX, (-18*alianceAdjustor)+startY))
+                .back(14)
                 .build();
 
         driveToNextAprilTag = driveBase.trajectorySequenceBuilder(driveBase.getPoseEstimate())
-                .strafeRight(12)
+                .lineToConstantHeading(new Vector2d(driveBase.getPoseEstimate().getX(), driveBase.getPoseEstimate().getY()+(-12*alianceAdjustor)))
                 .build();
 
         driveToPixelStacksTrajectory = driveBase.trajectorySequenceBuilder(driveBase.getPoseEstimate())
-                .splineToConstantHeading(new Vector2d(10+startX, -33+startY), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(-20+startX, -33+startY), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(-43+startX, -33+startY), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(10-startX, (-33*alianceAdjustor)+startY), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(-20-startX, (-33*alianceAdjustor)+startY), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(-43-startX, (-33*alianceAdjustor)+startY), Math.toRadians(180))
                 .build();
 
         driveBackToBackDrop = driveBase.trajectorySequenceBuilder(driveToPixelStacksTrajectory.end())
-                .splineToConstantHeading(new Vector2d(-20+startX, -33+startY), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(10+startX, -34+startY), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(35+startX, -3+startY), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(-20-startX, (-33*alianceAdjustor)+startY), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(10-startX, (-34*alianceAdjustor)+startY), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(35-startX, (-3*alianceAdjustor)+startY), Math.toRadians(180))
                 //.lineToConstantHeading(new Vector2d(60+startX, -15+startY))
                 .build();
 
         driveToRightParkingLocationTrajectory = driveBase.trajectorySequenceBuilder(driveBackToBackDrop.end())
-                .strafeLeft(28)
+                .lineToConstantHeading(new Vector2d(driveBase.getPoseEstimate().getX(), driveBase.getPoseEstimate().getY()+(-28*alianceAdjustor)))
                 .back(17)
                 //.splineToConstantHeading(new Vector2d(55+startX, -40+startY), Math.toRadians(180))
                 .build();
