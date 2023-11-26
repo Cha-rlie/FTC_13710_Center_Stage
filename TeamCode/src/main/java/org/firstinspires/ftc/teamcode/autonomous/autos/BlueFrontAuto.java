@@ -19,7 +19,7 @@ public class BlueFrontAuto extends OpMode {
 
     public void init() {
         // Help the autoParent to initiate
-        frontAutoParent = new FrontAutoParent(hardwareMap, "RED");
+        frontAutoParent = new FrontAutoParent(hardwareMap, "BLUE");
 
         // Detect the team prop's location
         frontAutoParent.detectProp(hardwareMap, telemetry, 5);
