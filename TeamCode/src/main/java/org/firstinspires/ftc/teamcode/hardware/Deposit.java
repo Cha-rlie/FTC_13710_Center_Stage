@@ -6,9 +6,8 @@ import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
-import com.arcrobotics.ftclib.util.MathUtils;
-import com.arcrobotics.ftclib.util.Timing.Timer;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -20,8 +19,7 @@ public class Deposit extends SubsystemBase {
     // Servos
     public ServoEx Wrist; // Wrist
     public ServoEx Gripper;
-    public ServoEx V4B1; // V4B
-    public ServoEx V4B2;
+    public ServoEx V4B;
 
     // Slide Motors
     public MotorEx DS1; // Deposit Slide 1
@@ -31,7 +29,7 @@ public class Deposit extends SubsystemBase {
     // Slide positions
     public int min = 0;
     public int max = 1300; //760;
-    public double power = 1;
+    public double power = 0.5;
     public double defaultWrist = 205; //180
     public double rampPosition = 51;  //50
     public int closedPosition = 110;
@@ -46,19 +44,16 @@ public class Deposit extends SubsystemBase {
         DS2 = new MotorEx(hardwareMap, "DS2", Motor.GoBILDA.RPM_1150);
         DS1.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         DS2.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        DS1.motor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         int MIN_ANGLE = 0;
         int MAX_ANGLE = 355;
 
-        V4B1 = new SimpleServo(hardwareMap, "V4B1", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
-        V4B2 = new SimpleServo(hardwareMap, "V4B2", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
+        V4B = new SimpleServo(hardwareMap, "V4B", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
         Wrist = new SimpleServo(hardwareMap, "W", 0, 260, AngleUnit.DEGREES);
         Gripper = new SimpleServo(hardwareMap, "G", 0, 180, AngleUnit.DEGREES);
 
-        V4B1.setInverted(true);
-
-        V4B1.turnToAngle(80);
-        V4B2.turnToAngle(80);
+        V4B.turnToAngle(80);
 
         Wrist.turnToAngle(defaultWrist);
         Gripper.turnToAngle(openPosition);
@@ -71,10 +66,9 @@ public class Deposit extends SubsystemBase {
     public void manualV4BControl(double angle, Telemetry telemetry) {
         int scaling = 8;
 
-        V4B1.rotateByAngle(angle  * scaling);
-        V4B2.rotateByAngle(angle  * scaling);
+        V4B.rotateByAngle(angle  * scaling);
 
-        telemetry.addData("V4B: ", V4B1.getAngle());
+        telemetry.addData("V4B: ", V4B.getAngle());
     }
 
     public void manualWristControl(double angle, Telemetry telemetry) {
@@ -100,28 +94,24 @@ public class Deposit extends SubsystemBase {
     }
 
     public void home() {
-        V4B1.turnToAngle(55);
-        V4B2.turnToAngle(55);
+        V4B.turnToAngle(55);
 
         Wrist.turnToAngle(defaultWrist);
         Gripper.turnToAngle(openPosition);
     }
 
     public void safe() {
-        V4B1.turnToAngle(60);
-        V4B2.turnToAngle(60);
+        V4B.turnToAngle(60);
         Wrist.turnToAngle(240);
     }
 
     public void visible() {
-        V4B1.turnToAngle(85);
-        V4B2.turnToAngle(85);
+        V4B.turnToAngle(85);
         Wrist.turnToAngle(210);
     }
 
     public void place() {
-        V4B1.turnToAngle(275);
-        V4B2.turnToAngle(275);
+        V4B.turnToAngle(275);
         Wrist.turnToAngle(40);
     }
 

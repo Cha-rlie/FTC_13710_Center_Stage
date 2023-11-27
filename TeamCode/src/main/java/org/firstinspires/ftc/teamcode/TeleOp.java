@@ -1,11 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.arcrobotics.ftclib.command.CommandScheduler;
-import com.arcrobotics.ftclib.command.button.Button;
-import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.arcrobotics.ftclib.util.MathUtils;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -14,8 +11,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 // Import local FTCLib hardware classes
-import org.firstinspires.ftc.teamcode.commands.Reset;
-import org.firstinspires.ftc.teamcode.commands.Serve;
 import org.firstinspires.ftc.teamcode.hardware.Deposit;
 import org.firstinspires.ftc.teamcode.hardware.Drivebase;
 import org.firstinspires.ftc.teamcode.hardware.DroneLauncher;
@@ -23,7 +18,7 @@ import org.firstinspires.ftc.teamcode.hardware.Hang;
 import org.firstinspires.ftc.teamcode.hardware.Intake;
 
 // Import local FTCLib command classes
-import org.firstinspires.ftc.teamcode.commands.Omelette;
+
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Competition TeleOp", group = "TeleOp")
 
@@ -99,9 +94,8 @@ public class TeleOp extends OpMode {
 
         // Update the variables
         if (toolOp.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5) {
-            intake.IntakeCover.turnToAngle(210);
-            deposit.V4B1.turnToAngle(90);
-            deposit.V4B2.turnToAngle(90);
+            intake.IntakeCover.turnToAngle(200);
+            deposit.V4B.turnToAngle(90);
             if(!IntakeOneTime) {
                 intake.coverTimer.reset();
                 IntakeOneTime = true;
@@ -114,7 +108,7 @@ public class TeleOp extends OpMode {
             intake.Rspin();
         } else {
             intake.intakeSpinner.motor.setPower(0);
-            intake.IntakeCover.turnToAngle(130);
+            intake.IntakeCover.turnToAngle(120);
             IntakeOneTime = false;
         }
 
@@ -148,8 +142,7 @@ public class TeleOp extends OpMode {
         if(commandRun) {
             deposit.Wrist.turnToAngle(deposit.defaultWrist);
             if(deposit.safeTimer.seconds() > 0 && deposit.safeTimer.seconds() < 0.5) {
-                deposit.V4B1.turnToAngle(deposit.rampPosition);
-                deposit.V4B2.turnToAngle(deposit.rampPosition);
+                deposit.V4B.turnToAngle(deposit.rampPosition);
             } else if(deposit.safeTimer.seconds() > 0.5 && deposit.safeTimer.seconds() < 1) {
                 deposit.Gripper.turnToAngle(deposit.closedPosition);
             } else if(deposit.safeTimer.seconds() > 1 && deposit.safeTimer.seconds() < 1.5) {

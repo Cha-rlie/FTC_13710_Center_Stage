@@ -47,8 +47,7 @@ public class Reset extends CommandBase {
         } else {
             if(!oneTime) {
                 depositSubSystem.Wrist.turnToAngle(120);
-                depositSubSystem.V4B1.turnToAngle(depositSubSystem.rampPosition);
-                depositSubSystem.V4B2.turnToAngle(depositSubSystem.rampPosition);
+                depositSubSystem.V4B.turnToAngle(depositSubSystem.rampPosition);
 
                 operationFinished = true;
 

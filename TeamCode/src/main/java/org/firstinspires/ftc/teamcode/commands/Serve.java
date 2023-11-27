@@ -1,15 +1,10 @@
 package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.arcrobotics.ftclib.util.MathUtils;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 // Import Local Custom Classes
 import org.firstinspires.ftc.teamcode.hardware.Deposit;
-import org.firstinspires.ftc.teamcode.hardware.LinearRegression;
 
 
 public class Serve extends CommandBase {
@@ -44,8 +39,7 @@ public class Serve extends CommandBase {
         // Determine whether the outtake is past the safe rotation position
         if(currentLocation >= safePos-(uncertainty*2)) {
             depositSubSystem.Wrist.turnToAngle(36);
-            depositSubSystem.V4B1.turnToAngle(233);
-            depositSubSystem.V4B2.turnToAngle(233);
+            depositSubSystem.V4B.turnToAngle(233);
 
             operationFinished = true;
 
