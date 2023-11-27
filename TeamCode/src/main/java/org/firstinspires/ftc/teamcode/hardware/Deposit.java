@@ -30,7 +30,7 @@ public class Deposit extends SubsystemBase {
     public MotorGroup DS; // Deposit Slides
     // Slide positions
     public int min = 0;
-    public int max = 760;
+    public int max = 1300; //760;
     public double power = 1;
     public double defaultWrist = 205; //180
     public double rampPosition = 51;  //50
