@@ -99,7 +99,7 @@ public class TeleOp extends OpMode {
 
         // Update the variables
         if (toolOp.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5) {
-            intake.IntakeCover.turnToAngle(200);
+            intake.IntakeCover.turnToAngle(210);
             deposit.V4B1.turnToAngle(90);
             deposit.V4B2.turnToAngle(90);
             if(!IntakeOneTime) {
