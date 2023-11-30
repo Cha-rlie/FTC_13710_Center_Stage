@@ -59,6 +59,7 @@ public class Drivebase extends SubsystemBase {
         rearRight.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
     }
 
+    /*
     public void forward(int distanceCM, int heading, double power, Telemetry telemetry, double botHeading) {
         double requiredTicks = distanceCM/distancePerTick;
         double currentTicks = 0;
@@ -171,6 +172,8 @@ public class Drivebase extends SubsystemBase {
         rearLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rearRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
+
+     */
 
     public void userControlledDrive(Gamepad gamepad1, double botHeading) {
         double speedModifier = 0.9; //Used to be 0.7

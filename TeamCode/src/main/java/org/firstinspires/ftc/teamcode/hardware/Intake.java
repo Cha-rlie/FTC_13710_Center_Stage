@@ -34,11 +34,14 @@ public class Intake extends SubsystemBase {
 
         IntakeCover = new SimpleServo(hardwareMap, "I", 0, 260, AngleUnit.DEGREES);
 
+        IntakeCover.turnToAngle(200);
+
     }
 
     public void spin() {
         intakeSpinner.set(-0.8);
         intakeCurrentlySpinning = true;
+        IntakeCover.turnToAngle(200);
     }
 
     public void Rspin() {
