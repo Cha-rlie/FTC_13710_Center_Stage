@@ -5,6 +5,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -17,6 +18,7 @@ import org.firstinspires.ftc.teamcode.hardware.Drivebase;
 import org.firstinspires.ftc.teamcode.hardware.DroneLauncher;
 import org.firstinspires.ftc.teamcode.hardware.Hang;
 import org.firstinspires.ftc.teamcode.hardware.Intake;
+import org.firstinspires.ftc.teamcode.roadrunner.util.Encoder;
 
 // Import local FTCLib command classes
 
@@ -42,6 +44,9 @@ public class TeleOp extends OpMode {
 
     boolean clawClosed;
     boolean buttonIsReleased;
+
+    Encoder parallelEncoder;
+    Encoder perpendicularEncoder;
 
 
     public void init() {
@@ -71,6 +76,9 @@ public class TeleOp extends OpMode {
         clawClosed = false;
         buttonIsReleased = true;
 
+         parallelEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "RearRight"));
+         perpendicularEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "RearLeft"));
+         perpendicularEncoder.setDirection(Encoder.Direction.REVERSE);
     }
 
     //allows driver to indicate that the IMU should not be reset
@@ -87,6 +95,9 @@ public class TeleOp extends OpMode {
     public void loop() {
         // This must be called from the function that loops in the opmode for everything to run
         //CommandScheduler.getInstance().run();
+
+        telemetry.addData("PAR", parallelEncoder.getCurrentPosition());
+        telemetry.addData("PER", perpendicularEncoder.getCurrentPosition());
 
         // Run the drivebase with the driveOp gamepad
         driveBase.userControlledDrive(gamepad1, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));

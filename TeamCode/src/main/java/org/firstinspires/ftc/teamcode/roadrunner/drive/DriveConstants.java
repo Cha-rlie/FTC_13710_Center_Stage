@@ -23,8 +23,8 @@ public class DriveConstants {
     /*
      * These are motor constants that should be listed online for your motors.
      */
-    public static final double TICKS_PER_REV = 537.7; //Old: 751.8;
-    public static final double MAX_RPM = 312; //Old: 223;
+    public static final double TICKS_PER_REV = 751.8;
+    public static final double MAX_RPM = 223;
 
     /*
      * Set RUN_USING_ENCODER to true to enable built-in hub velocity control using drive encoders.
@@ -50,7 +50,7 @@ public class DriveConstants {
      */
     public static double WHEEL_RADIUS = 1.8898; // in
     public static double GEAR_RATIO = 2; //Old: 2.3484848485; //Tuned from straight test, but originally 2.5; // output (wheel) speed = 12 / input (motor) speed = 30
-    public static double TRACK_WIDTH = 8; //Old: 14.0011; //This was tuned, the original calculated value was 14.16 inches
+    public static double TRACK_WIDTH = 9.32555; //Previously Tuned: 9.240963; //Before Tuning: 9.4; //Old: 14.0011; //This was tuned, the original calculated value was 14.16 inches
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -58,9 +58,9 @@ public class DriveConstants {
      * motor encoders or have elected not to use them for velocity control, these values should be
      * empirically tuned.
      */
-    public static double kV = 1.0 / rpmToVelocity(MAX_RPM);
-    public static double kA = 0;
-    public static double kStatic = 0;
+    public static double kV = 0.015429759176254825; //1.0 / rpmToVelocity(MAX_RPM);
+    public static double kA = 0.005; //0
+    public static double kStatic = 0.01; //0
 
     /*
      * These values are used to generate the trajectories for you robot. To ensure proper operation,
@@ -90,11 +90,11 @@ public class DriveConstants {
      * You are free to raise this on your own if you would like. It is best determined through experimentation.
 
      */
-    public static double MAX_VEL = 98.791377; //Old: 45 //64.44667423738913; //Tuned Value // Old Value 88.2631293784093367624276581;
-    public static double MAX_ACCEL = 98.791377; //88.2631293784093367624276581;
+    public static double MAX_VEL = 75.02365997; //Old: 45 //64.44667423738913; //Tuned Value // Old Value 88.2631293784093367624276581;
+    public static double MAX_ACCEL = 75.02365997; //88.2631293784093367624276581;
 
-    public static double MAX_ANG_VEL = Math.toRadians(180); //Old: 110 //9.600001633182172 //60.713828813559324
-    public static double MAX_ANG_ACCEL = Math.toRadians(180); //Old: 110
+    public static double MAX_ANG_VEL = Math.toRadians(270); //Old: 110 //9.600001633182172 //60.713828813559324
+    public static double MAX_ANG_ACCEL = Math.toRadians(270); //Old: 110
 
     /*
      * Adjust the orientations here to match your robot. See the FTC SDK documentation for details.
