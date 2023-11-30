@@ -23,8 +23,8 @@ public class DriveConstants {
     /*
      * These are motor constants that should be listed online for your motors.
      */
-    public static final double TICKS_PER_REV = 751.8;
-    public static final double MAX_RPM = 223;
+    public static final double TICKS_PER_REV = 537.7; //Old: 751.8;
+    public static final double MAX_RPM = 312; //Old: 223;
 
     /*
      * Set RUN_USING_ENCODER to true to enable built-in hub velocity control using drive encoders.
@@ -34,9 +34,11 @@ public class DriveConstants {
      * If using the built-in motor velocity PID, update MOTOR_VELO_PID with the tuned coefficients
      * from DriveVelocityPIDTuner.
      */
-    public static final boolean RUN_USING_ENCODER = true;
-    public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(1.5, 0, 0.0015,
-            /*getMotorVelocityF(MAX_RPM / 60 * TICKS_PER_REV)*/ 16.346930925306292);
+    public static final boolean RUN_USING_ENCODER = false; //Old: true;
+    public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(0, 0, 0,
+            getMotorVelocityF(MAX_RPM / 60 * TICKS_PER_REV));
+    /* OLd: public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(1.5, 0, 0.0015,
+            *getMotorVelocityF(MAX_RPM / 60 * TICKS_PER_REV)* 16.346930925306292);*/
 
     /*
      * These are physical constants that can be determined from your robot (including the track
@@ -47,8 +49,8 @@ public class DriveConstants {
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
     public static double WHEEL_RADIUS = 1.8898; // in
-    public static double GEAR_RATIO = 2.3484848485; //Tuned from straight test, but originally 2.5; // output (wheel) speed = 12 / input (motor) speed = 30
-    public static double TRACK_WIDTH = 14.0011; //This was tuned, the original calculated value was 14.16 inches
+    public static double GEAR_RATIO = 2; //Old: 2.3484848485; //Tuned from straight test, but originally 2.5; // output (wheel) speed = 12 / input (motor) speed = 30
+    public static double TRACK_WIDTH = 8; //Old: 14.0011; //This was tuned, the original calculated value was 14.16 inches
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -88,17 +90,17 @@ public class DriveConstants {
      * You are free to raise this on your own if you would like. It is best determined through experimentation.
 
      */
-    public static double MAX_VEL = 45; //64.44667423738913; //Tuned Value // Old Value 88.2631293784093367624276581;
-    public static double MAX_ACCEL = 68; //88.2631293784093367624276581;
+    public static double MAX_VEL = 98.791377; //Old: 45 //64.44667423738913; //Tuned Value // Old Value 88.2631293784093367624276581;
+    public static double MAX_ACCEL = 98.791377; //88.2631293784093367624276581;
 
-    public static double MAX_ANG_VEL = Math.toRadians(110); //9.600001633182172 //60.713828813559324
-    public static double MAX_ANG_ACCEL = Math.toRadians(110);
+    public static double MAX_ANG_VEL = Math.toRadians(180); //Old: 110 //9.600001633182172 //60.713828813559324
+    public static double MAX_ANG_ACCEL = Math.toRadians(180); //Old: 110
 
     /*
      * Adjust the orientations here to match your robot. See the FTC SDK documentation for details.
      */
     public static RevHubOrientationOnRobot.LogoFacingDirection LOGO_FACING_DIR =
-            RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
+            RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
     public static RevHubOrientationOnRobot.UsbFacingDirection USB_FACING_DIR =
             RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
