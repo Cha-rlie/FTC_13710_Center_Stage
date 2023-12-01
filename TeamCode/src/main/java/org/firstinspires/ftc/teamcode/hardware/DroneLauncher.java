@@ -19,8 +19,8 @@ public class DroneLauncher extends SubsystemBase {
         Shoot.turnToAngle(30);
     }
 
-    public void shoot() {
-        Shoot.turnToAngle(0);
-    }
+    public void shoot() { Shoot.turnToAngle(0); }
+
+    public void reset() { Shoot.turnToAngle(30); }
 
 }

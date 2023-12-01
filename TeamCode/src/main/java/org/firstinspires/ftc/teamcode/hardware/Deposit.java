@@ -25,16 +25,8 @@ public class Deposit extends SubsystemBase {
     public ServoEx Spin;
 
 
-    // Slide Motors
-    public MotorEx DS1; // Deposit Slide 1
-    public MotorEx DS2; // Deposit Slide 2
-
     public MotorGroup DS; // Deposit Slides
     // Slide positions
-    public int min = 0;
-    public int max = 1250;
-    public double power = 1;
-
     public int lastSlidePos = 0;
     public double defaultWrist = 205;
     public double rampPosition = 131.53;
@@ -47,12 +39,6 @@ public class Deposit extends SubsystemBase {
     public Deposit(HardwareMap hardwareMap) {
         // Assign variables here with parameters
 //        GS = new SimpleServo(hardwareMap, "GS", 0, 360, AngleUnit.DEGREES);
-
-        DS1 = new MotorEx(hardwareMap, "DS1", Motor.GoBILDA.RPM_1150);
-        DS2 = new MotorEx(hardwareMap, "DS2", Motor.GoBILDA.RPM_1150);
-        DS1.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        DS2.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        DS1.motor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         int MIN_ANGLE = 0;
         int MAX_ANGLE = 355;
@@ -70,8 +56,6 @@ public class Deposit extends SubsystemBase {
         Wrist.turnToAngle(defaultWrist);
         Gripper.turnToAngle(openPosition);
         Spin.turnToAngle(transferSpin);
-
-        resetPosition();
 
         ElapsedTime wait = new ElapsedTime();
         wait.reset();
@@ -122,18 +106,6 @@ public class Deposit extends SubsystemBase {
     }
 
 
-    public void resetPosition() {
-//        DS.setRunMode(Motor.RunMode.RawPower);
-//
-//        while(DS1.motorEx.getCurrent(CurrentUnit.AMPS) < 1.5) {
-//            DS.set(0.3);
-//        }
-
-//        DS.resetEncoder();
-        DS1.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        DS2.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-    }
 
     public void home() {
         V4B.turnToAngle(160);
@@ -152,41 +124,8 @@ public class Deposit extends SubsystemBase {
         Wrist.turnToAngle(165);
     }
 
-    public void upSlides(double joystickPower) {
-        DS1.motor.setTargetPosition(max);
-        DS2.motor.setTargetPosition(max);
-
-        DS1.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        DS2.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        DS1.motor.setPower(joystickPower);
-        DS2.motor.setPower(joystickPower);
-    }
-
-    public void downSlides(double joystickPower) {
-        DS1.motor.setTargetPosition(min);
-        DS2.motor.setTargetPosition(min);
-
-        DS1.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        DS2.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        DS1.motor.setPower(joystickPower);
-        DS2.motor.setPower(joystickPower);
-    }
-
-    public void powerOffSlides() {
-//        DS1.motor.setPower(0);
-//        DS2.motor.setPower(0);
-
-        DS1.motor.setTargetPosition(lastSlidePos);
-        DS2.motor.setTargetPosition(lastSlidePos);
-
-        DS1.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        DS2.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        DS1.motor.setPower(power);
-        DS2.motor.setPower(power);
-    }
+    public void grab() { Gripper.turnToAngle(closedPosition); }
+    public void release() { Gripper.turnToAngle(openPosition); }
 
     public boolean withinUncertainty(double currentPos, double wantedPos, double range) {
         if((currentPos < wantedPos + range) && currentPos > wantedPos - range) {
