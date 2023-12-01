@@ -32,13 +32,13 @@ public class Deposit extends SubsystemBase {
     public MotorGroup DS; // Deposit Slides
     // Slide positions
     public int min = 0;
-    public int max = 1300;
+    public int max = 1250;
     public double power = 1;
 
     public int lastSlidePos = 0;
     public double defaultWrist = 205;
-    public double rampPosition = 128.4;
-    public int closedPosition = 140;
+    public double rampPosition = 131.53;
+    public int closedPosition = 150;
     public int openPosition = 30;
     public int transferSpin = 27;
     public int flatSpin = 120;
@@ -72,6 +72,14 @@ public class Deposit extends SubsystemBase {
         Spin.turnToAngle(transferSpin);
 
         resetPosition();
+
+        ElapsedTime wait = new ElapsedTime();
+        wait.reset();
+
+        while(wait.seconds() < 2) {
+        }
+
+        coverSafeMove();
     }
 
     public double getV4BPos() {
@@ -128,36 +136,42 @@ public class Deposit extends SubsystemBase {
     }
 
     public void home() {
-        V4B.turnToAngle(145);
+        V4B.turnToAngle(160);
         Wrist.turnToAngle(260);
         Spin.turnToAngle(transferSpin);
     }
 
-    public void place() {
-        V4B.turnToAngle(324);
-        Wrist.turnToAngle(168);
+    public void coverSafeMove() {
+        // Moves the deposit if its going to intercept the cover movement
+        if(V4B.getAngle() < 160) { V4B.turnToAngle(160); }
+        if(Wrist.getAngle() < 175) { Wrist.turnToAngle(175); }
     }
 
-    public void upSlides() {
+    public void place() {
+        V4B.turnToAngle(324);
+        Wrist.turnToAngle(165);
+    }
+
+    public void upSlides(double joystickPower) {
         DS1.motor.setTargetPosition(max);
         DS2.motor.setTargetPosition(max);
 
         DS1.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         DS2.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        DS1.motor.setPower(power);
-        DS2.motor.setPower(power);
+        DS1.motor.setPower(joystickPower);
+        DS2.motor.setPower(joystickPower);
     }
 
-    public void downSlides() {
+    public void downSlides(double joystickPower) {
         DS1.motor.setTargetPosition(min);
         DS2.motor.setTargetPosition(min);
 
         DS1.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         DS2.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        DS1.motor.setPower(power);
-        DS2.motor.setPower(power);
+        DS1.motor.setPower(joystickPower);
+        DS2.motor.setPower(joystickPower);
     }
 
     public void powerOffSlides() {

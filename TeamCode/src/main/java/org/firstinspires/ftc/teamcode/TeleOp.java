@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -11,7 +13,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 // Import local FTCLib hardware classes
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.hardware.Deposit;
 import org.firstinspires.ftc.teamcode.hardware.Drivebase;
 import org.firstinspires.ftc.teamcode.hardware.DroneLauncher;
@@ -23,7 +24,7 @@ import org.firstinspires.ftc.teamcode.hardware.Intake;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Competition TeleOp", group = "TeleOp")
 
-public class TeleOp extends OpMode {
+public class TeleOp extends CommandOpMode {
     Drivebase driveBase;
     IMU imu;
     GamepadEx driveOp;
@@ -41,10 +42,11 @@ public class TeleOp extends OpMode {
     private DroneLauncher shooter;
 
     boolean clawClosed;
+    boolean coverDown;
     boolean buttonIsReleased;
 
-
-    public void init() {
+    @Override
+    public void initialize() {
         driveBase = new Drivebase(hardwareMap);
         // Initialise the imuGyro with the correct orientation
         imu = hardwareMap.get(IMU.class, "imu");
@@ -59,6 +61,9 @@ public class TeleOp extends OpMode {
 
         driveOp = new GamepadEx(gamepad1);
         toolOp = new GamepadEx(gamepad2);
+        new GamepadButton(toolOp, GamepadKeys.Button.START).toggleWhenPressed(() -> intake.openCover(), () -> intake.closeCover());
+
+
         deposit = new Deposit(hardwareMap);
         intake = new Intake(hardwareMap, driveOp);
         hang = new Hang(hardwareMap);
@@ -69,24 +74,14 @@ public class TeleOp extends OpMode {
         CommandScheduler.getInstance();
 
         clawClosed = false;
+        coverDown = true;
         buttonIsReleased = true;
-
     }
-
-    //allows driver to indicate that the IMU should not be reset
-    //used when starting TeleOp after auto or if program crashes in the middle of match
-    //relevant because of field-centric controls
-    public void init_loop() {
-
-    }
-
-    public void start () {
-
-    }
-
-    public void loop() {
+    
+    @Override
+    public void run() {
         // This must be called from the function that loops in the opmode for everything to run
-        //CommandScheduler.getInstance().run();
+        CommandScheduler.getInstance().run();
 
         // Run the drivebase with the driveOp gamepad
         driveBase.userControlledDrive(gamepad1, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
@@ -128,10 +123,6 @@ public class TeleOp extends OpMode {
             buttonIsReleased = true;
         }
 
-        double totalCurrent = driveBase.frontLeft.getCurrent(CurrentUnit.AMPS) + driveBase.frontRight.getCurrent(CurrentUnit.AMPS) + driveBase.rearLeft.getCurrent(CurrentUnit.AMPS) + driveBase.rearRight.getCurrent(CurrentUnit.AMPS);
-        telemetry.addData("Total Current Draw: ", totalCurrent);
-
-
         // X goes to scoring position
         if(toolOp.getButton(GamepadKeys.Button.X)) {
             deposit.place();
@@ -147,42 +138,60 @@ public class TeleOp extends OpMode {
             commandRun = true;
             deposit.safeTimer.reset();
             deposit.Gripper.turnToAngle(deposit.openPosition);
+            deposit.V4B.turnToAngle(160);
         }
 
         // Complex transfer command
         if(commandRun) {
-            deposit.Wrist.turnToAngle(245);
+            deposit.Wrist.turnToAngle(241.9);
             if(deposit.safeTimer.seconds() > 0.5 && deposit.safeTimer.seconds() < 0.8) {
                 deposit.V4B.turnToAngle(deposit.rampPosition);
             } else if(deposit.safeTimer.seconds() > 0.8 && deposit.safeTimer.seconds() < 1.2) {
                 deposit.Gripper.turnToAngle(deposit.closedPosition);
             } else if(deposit.safeTimer.seconds() > 1.2 && deposit.safeTimer.seconds() < 2) {
-                intake.IntakeCover.turnToAngle(114);
                 commandRun = false;
+                deposit.V4B.turnToAngle(170);
+                intake.openCover();
+                coverDown = true;
             }
         }
 
+//        if(toolOp.getButton(GamepadKeys.Button.START)) {
+//            if (buttonIsReleased) {
+//                buttonIsReleased = false;
+//                if(coverDown == false) {
+//                    coverDown = true;
+//                    deposit.coverSafeMove();
+//                    intake.closeCover();
+//                } else if(coverDown == true) {
+//                    coverDown = false;
+//                    deposit.coverSafeMove();
+//                    intake.openCover();
+//                }
+//            }
+//        } else {
+//            buttonIsReleased = true;
+//        }
+
+//        if(driveOp.getButton(GamepadKeys.Button.DPAD_UP )) {
+//            hang.raise();
+//        } else if (driveOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+//            hang.lower();
+//        } else {
+//            hang.Hang.motor.setPower(0);
+//            hang.HangPusher.setPower(0);
+//        }
 
 
-        if(driveOp.getButton(GamepadKeys.Button.DPAD_UP )) {
-            hang.raise();
-        } else if (driveOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
-            hang.lower();
-        } else {
-            hang.Hang.motor.setPower(0);
-            hang.HangPusher.setPower(0);
-        }
-
-
-        if(toolOp.getButton(GamepadKeys.Button.DPAD_UP)) {
-            deposit.upSlides();
-            deposit.lastSlidePos = deposit.DS1.getCurrentPosition();
-        } else if(toolOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
-            deposit.downSlides();
-            deposit.lastSlidePos = deposit.DS1.getCurrentPosition();
-        } else {
-            deposit.powerOffSlides();
-        }
+//        if(driveOp.getButton(GamepadKeys.Button.DPAD_UP)) {
+//            deposit.upSlides();
+//            deposit.lastSlidePos = deposit.DS1.getCurrentPosition();
+//        } else if(driveOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+//            deposit.downSlides();
+//            deposit.lastSlidePos = deposit.DS1.getCurrentPosition();
+//        } else {
+//            deposit.powerOffSlides();
+//        }
 
         if(toolOp.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
             deposit.mosaicSpin(1, telemetry);
@@ -192,21 +201,31 @@ public class TeleOp extends OpMode {
             deposit.mosaicSpin(0, telemetry);
         }
 
-        // Safety Features
-//        if(deposit.getV4BPos() < 100 && deposit.getV4BPos() > 90) {
-//            deposit.Spin.turnToAngle(deposit.flatSpin);
-//        } else if(deposit.getV4BPos() > 100) {
-//            deposit.Spin.turnToAngle(deposit.transferSpin);
-//        }
 
         if (deposit.V4B.getAngle() < 180) {
             deposit.Spin.turnToAngle(deposit.transferSpin);
         }
 
+        if(toolOp.getLeftY() > 0.1) {
+            deposit.upSlides(toolOp.getLeftY());
+            deposit.lastSlidePos = deposit.DS1.getCurrentPosition();
+        } else if(toolOp.getLeftY() < -0.1) {
+            deposit.downSlides(-toolOp.getLeftY());
+            deposit.lastSlidePos = deposit.DS1.getCurrentPosition();
+        } else {
+            deposit.powerOffSlides();
+        }
 
 
-        deposit.manualV4BControl(toolOp.getLeftY(), telemetry);
-        deposit.manualWristControl(toolOp.getRightY(), telemetry);
+
+        deposit.manualV4BControl(-toolOp.getRightY(), telemetry);
+
+        //deposit.manualWristControl(toolOp.getRightY(), telemetry);
+        if(toolOp.getButton(GamepadKeys.Button.DPAD_UP)) {
+            deposit.manualWristControl(1, telemetry);
+        } else if(toolOp.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+            deposit.manualWristControl(-1, telemetry);
+        }
 
         telemetry.addData("Analog V4B Pos", deposit.getV4BPos());
 

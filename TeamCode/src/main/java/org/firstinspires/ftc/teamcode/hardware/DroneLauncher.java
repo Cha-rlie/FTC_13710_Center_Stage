@@ -16,11 +16,11 @@ public class DroneLauncher extends SubsystemBase {
         // Assign variables here with parameters
         Shoot = new SimpleServo(hardwareMap, "Shoot", 0, 260, AngleUnit.DEGREES);
 
-        Shoot.turnToAngle(0);
+        Shoot.turnToAngle(30);
     }
 
     public void shoot() {
-        Shoot.turnToAngle(100);
+        Shoot.turnToAngle(0);
     }
 
 }

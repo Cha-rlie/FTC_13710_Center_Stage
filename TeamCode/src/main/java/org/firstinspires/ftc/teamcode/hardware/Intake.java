@@ -58,6 +58,9 @@ public class Intake extends SubsystemBase {
         telemetry.addData("Intake Cover: ", IntakeCover.getAngle());
     }
 
+    public void openCover() {IntakeCover.turnToAngle(114);}
+    public void closeCover() {IntakeCover.turnToAngle(200);}
+
     public void spinFor5Seconds() {
         if (intakeCurrentlySpinning) {
 

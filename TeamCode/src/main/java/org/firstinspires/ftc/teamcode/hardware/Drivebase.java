@@ -184,9 +184,13 @@ public class Drivebase extends SubsystemBase {
             speedModifier = 1;
         }
 
-        double y = -gamepad1.right_stick_y; // Remember, Y stick value is reversed
-        double x = gamepad1.right_stick_x;
-        double rx = gamepad1.left_stick_x;
+//        double y = -gamepad1.right_stick_y; // Remember, Y stick value is reversed
+//        double x = gamepad1.right_stick_x;
+//        double rx = gamepad1.left_stick_x;
+
+        double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
+        double x = gamepad1.left_stick_x;
+        double rx = gamepad1.right_stick_x;
 
         // Rotate the movement direction counter to the bot's rotation
         double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
