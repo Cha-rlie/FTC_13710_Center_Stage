@@ -1,29 +1,22 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.arcrobotics.ftclib.command.CommandOpMode;
-import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.button.GamepadButton;
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.IMU;
+import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 // Import local FTCLib hardware classes
+import org.firstinspires.ftc.teamcode.commands.FlattenCommand;
+import org.firstinspires.ftc.teamcode.commands.HomeCommand;
 import org.firstinspires.ftc.teamcode.commands.OpModeTemplate;
-import org.firstinspires.ftc.teamcode.hardware.Deposit;
-import org.firstinspires.ftc.teamcode.hardware.Drivebase;
-import org.firstinspires.ftc.teamcode.hardware.DroneLauncher;
-import org.firstinspires.ftc.teamcode.hardware.Hang;
-import org.firstinspires.ftc.teamcode.hardware.Intake;
 
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Competition TeleOp", group = "TeleOp")
 
 public class TeleOp extends OpModeTemplate {
+
     public boolean willResetIMU = true;
     ElapsedTime timer = new ElapsedTime();
     boolean commandRun;
@@ -38,19 +31,20 @@ public class TeleOp extends OpModeTemplate {
 
         commandRun = false;
 
-
         new GamepadButton(toolOp, GamepadKeys.Button.START).toggleWhenPressed(() -> intake.openCover(), () -> intake.closeCover());
         new GamepadButton(toolOp, GamepadKeys.Button.A).toggleWhenPressed(() -> deposit.grab(), () -> deposit.release());
         new GamepadButton(toolOp, GamepadKeys.Button.BACK).toggleWhenPressed(() -> shooter.shoot(),  () -> shooter.reset());
 
-        new GamepadButton(toolOp, GamepadKeys.Button.X).whenPressed(() -> deposit.place());
-        new GamepadButton(toolOp, GamepadKeys.Button.Y).whenPressed(() -> deposit.home());
+//        new GamepadButton(toolOp, GamepadKeys.Button.X).whenPressed(() -> deposit.place());
+        new GamepadButton(toolOp, GamepadKeys.Button.Y).whenPressed(new HomeCommand(deposit, lift));
 
         new GamepadButton(toolOp, GamepadKeys.Button.LEFT_BUMPER).whenPressed(() -> deposit.mosaicSpin(1, telemetry)).whenReleased(() -> deposit.mosaicSpin(0, telemetry));
         new GamepadButton(toolOp, GamepadKeys.Button.RIGHT_BUMPER).whenPressed(() -> deposit.mosaicSpin(-1, telemetry)).whenReleased(() -> deposit.mosaicSpin(0, telemetry));
 
-        new GamepadButton(toolOp, GamepadKeys.Button.DPAD_UP).whenPressed(() -> deposit.manualWristControl(1, telemetry));
-        new GamepadButton(toolOp, GamepadKeys.Button.DPAD_DOWN).whenPressed(() -> deposit.manualWristControl(-1, telemetry));
+//        new GamepadButton(toolOp, GamepadKeys.Button.DPAD_UP).whenPressed(() -> deposit.manualWristControl(1, telemetry));
+//        new GamepadButton(toolOp, GamepadKeys.Button.DPAD_DOWN).whenPressed(() -> deposit.manualWristControl(-1, telemetry));
+
+        new TriggerReader(toolOp, GamepadKeys.Trigger.RIGHT_TRIGGER).isDown();
 
     }
 
@@ -97,10 +91,8 @@ public class TeleOp extends OpModeTemplate {
             }
         }
 
-
-        if (deposit.V4B.getAngle() < 180) {
-            deposit.Spin.turnToAngle(deposit.transferSpin);
-        }
+//        lift.run(toolOp.getLeftY());
+//        hang.run(gamepad2);
 
 
         deposit.manualV4BControl(-toolOp.getRightY(), telemetry);
@@ -108,5 +100,8 @@ public class TeleOp extends OpModeTemplate {
         telemetry.addData("Wrist Pos", deposit.Wrist.getAngle());
 
         telemetry.update();
+
+
+
     }
 }

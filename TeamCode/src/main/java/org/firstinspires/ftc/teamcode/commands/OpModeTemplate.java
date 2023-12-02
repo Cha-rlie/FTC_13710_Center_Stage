@@ -5,20 +5,21 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.IMU;
 
-import org.firstinspires.ftc.teamcode.hardware.Deposit;
-import org.firstinspires.ftc.teamcode.hardware.Drivebase;
-import org.firstinspires.ftc.teamcode.hardware.DroneLauncher;
-import org.firstinspires.ftc.teamcode.hardware.Hang;
-import org.firstinspires.ftc.teamcode.hardware.Intake;
-import org.firstinspires.ftc.teamcode.hardware.Lift;
+import org.firstinspires.ftc.teamcode.hardware.DepositSubsystem;
+import org.firstinspires.ftc.teamcode.hardware.DriveSubsystem;
+import org.firstinspires.ftc.teamcode.hardware.DroneLauncherSubsystem;
+import org.firstinspires.ftc.teamcode.hardware.HangSubsystem;
+import org.firstinspires.ftc.teamcode.hardware.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.hardware.LiftSubsystem;
 
 abstract public class OpModeTemplate extends CommandOpMode {
-    protected Drivebase drivebase;
-    protected Deposit deposit;
-    protected Intake intake;
-    protected Hang hang;
-    protected DroneLauncher shooter;
-    protected Lift lift;
+    protected DriveSubsystem drivebase;
+    protected DepositSubsystem deposit;
+    protected IntakeSubsystem intake;
+    protected HangSubsystem hang;
+    protected DroneLauncherSubsystem shooter;
+    protected LiftSubsystem lift;
+
     protected IMU imu;
 
     protected GamepadEx driveOp;
@@ -40,17 +41,23 @@ abstract public class OpModeTemplate extends CommandOpMode {
         driveOp = new GamepadEx(gamepad1);
         toolOp = new GamepadEx(gamepad2);
 
-        drivebase = new Drivebase(hardwareMap);
-        deposit = new Deposit(hardwareMap);
-        intake = new Intake(hardwareMap, driveOp);
-        hang = new Hang(hardwareMap);
-        shooter = new DroneLauncher(hardwareMap);
-        lift = new Lift(hardwareMap);
+        drivebase = new DriveSubsystem(hardwareMap);
+        deposit = new DepositSubsystem(hardwareMap);
+        intake = new IntakeSubsystem(hardwareMap, driveOp, telemetry, gamepad1, gamepad2);
+        hang = new HangSubsystem(hardwareMap, gamepad2, telemetry);
+        shooter = new DroneLauncherSubsystem(hardwareMap);
+        lift = new LiftSubsystem(hardwareMap, telemetry, gamepad2, deposit, lift);
+
+
         telemetry.addLine("initialization complete");
         telemetry.update();
 
 
         register(intake, drivebase, hang, shooter, deposit);
 
+    }
+    protected void rumbleGamepads() {
+        gamepad1.rumble(500);
+        gamepad2.rumble(500);
     }
 }

@@ -3,24 +3,20 @@ package org.firstinspires.ftc.teamcode.hardware;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
-import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-public class Deposit extends SubsystemBase {
+public class DepositSubsystem extends SubsystemBase {
 
     // Servos
     public ServoEx Wrist; // Wrist
     public ServoEx Gripper;
-    public ServoEx V4B;
+    public SimpleServo V4B;
     public AnalogInput V4B_Analog;
     public ServoEx Spin;
 
@@ -28,7 +24,7 @@ public class Deposit extends SubsystemBase {
     public MotorGroup DS; // Deposit Slides
     // Slide positions
     public int lastSlidePos = 0;
-    public double defaultWrist = 205;
+    public double defaultWrist = 180;
     public double rampPosition = 131.53;
     public int closedPosition = 150;
     public int openPosition = 30;
@@ -36,7 +32,7 @@ public class Deposit extends SubsystemBase {
     public int flatSpin = 120;
     public ElapsedTime safeTimer = new ElapsedTime();
 
-    public Deposit(HardwareMap hardwareMap) {
+    public DepositSubsystem(HardwareMap hardwareMap) {
         // Assign variables here with parameters
 //        GS = new SimpleServo(hardwareMap, "GS", 0, 360, AngleUnit.DEGREES);
 
@@ -44,14 +40,16 @@ public class Deposit extends SubsystemBase {
         int MAX_ANGLE = 355;
 
         V4B = new SimpleServo(hardwareMap, "V4B", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
-        V4B_Analog = hardwareMap.get(AnalogInput.class, "VA");
 
+        V4B.setInverted(true);
+
+        V4B_Analog = hardwareMap.get(AnalogInput.class, "VA");
 
         Wrist = new SimpleServo(hardwareMap, "W", 0, 260, AngleUnit.DEGREES);
         Gripper = new SimpleServo(hardwareMap, "G", 0, 180, AngleUnit.DEGREES);
         Spin = new SimpleServo(hardwareMap, "Spin", 0, 180, AngleUnit.DEGREES);
 
-        V4B.turnToAngle(150);
+        V4B.turnToAngle(90);
 
         Wrist.turnToAngle(defaultWrist);
         Gripper.turnToAngle(openPosition);
@@ -64,6 +62,7 @@ public class Deposit extends SubsystemBase {
         }
 
         coverSafeMove();
+
     }
 
     public double getV4BPos() {
@@ -103,14 +102,6 @@ public class Deposit extends SubsystemBase {
         } else {
             Spin.turnToAngle(flatSpin);
         }
-    }
-
-
-
-    public void home() {
-        V4B.turnToAngle(160);
-        Wrist.turnToAngle(260);
-        Spin.turnToAngle(transferSpin);
     }
 
     public void coverSafeMove() {

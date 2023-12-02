@@ -2,19 +2,12 @@ package org.firstinspires.ftc.teamcode.hardware;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-
-public class Drivebase extends SubsystemBase {
+public class DriveSubsystem extends SubsystemBase {
 
     // Declare drivebase motor variables
     public DcMotorEx frontLeft;
@@ -39,7 +32,7 @@ public class Drivebase extends SubsystemBase {
     double START_DRIVE_SLOWDOWN_AT_CM = 50;
     double START_DRIVE_SLOWDOWN_AT_DEGREES = 15;
 
-    public Drivebase(HardwareMap hardwareMap) {
+    public DriveSubsystem(HardwareMap hardwareMap) {
         frontLeft = hardwareMap.get(DcMotorEx.class, "FrontLeft");
         frontRight = hardwareMap.get(DcMotorEx.class, "FrontRight");
         rearLeft = hardwareMap.get(DcMotorEx.class, "RearLeft");
