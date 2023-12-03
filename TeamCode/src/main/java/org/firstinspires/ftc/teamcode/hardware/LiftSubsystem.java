@@ -50,7 +50,7 @@ public class LiftSubsystem extends SubsystemBase {
     public void periodic() {
         double power = 1;
         if(gamepad2.touchpad_finger_1 && gamepad2.touchpad_finger_2) {
-            new HomeCommand(deposit, lift).schedule();
+            deposit.release();
         } else if(gamepad2.touchpad_finger_1) {
             int[] realWorldLoc = slideModel.convertInputToLocation(gamepad2.touchpad_finger_1_x, gamepad2.touchpad_finger_1_y, telemetry);
 

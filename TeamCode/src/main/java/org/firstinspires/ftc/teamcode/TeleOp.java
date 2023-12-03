@@ -11,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.commands.FlattenCommand;
 import org.firstinspires.ftc.teamcode.commands.HomeCommand;
 import org.firstinspires.ftc.teamcode.commands.OpModeTemplate;
+import org.firstinspires.ftc.teamcode.commands.TransferCommand;
 
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Competition TeleOp", group = "TeleOp")
@@ -37,6 +38,7 @@ public class TeleOp extends OpModeTemplate {
 
 //        new GamepadButton(toolOp, GamepadKeys.Button.X).whenPressed(() -> deposit.place());
         new GamepadButton(toolOp, GamepadKeys.Button.Y).whenPressed(new HomeCommand(deposit, lift));
+        new GamepadButton(toolOp, GamepadKeys.Button.B).whenPressed(new TransferCommand(deposit, lift, intake));
 
         new GamepadButton(toolOp, GamepadKeys.Button.LEFT_BUMPER).whenPressed(() -> deposit.mosaicSpin(1, telemetry)).whenReleased(() -> deposit.mosaicSpin(0, telemetry));
         new GamepadButton(toolOp, GamepadKeys.Button.RIGHT_BUMPER).whenPressed(() -> deposit.mosaicSpin(-1, telemetry)).whenReleased(() -> deposit.mosaicSpin(0, telemetry));
@@ -69,35 +71,14 @@ public class TeleOp extends OpModeTemplate {
         }
 
 
-        // B completes transfer
-        if(toolOp.getButton(GamepadKeys.Button.B)) {
-            commandRun = true;
-            deposit.safeTimer.reset();
-            deposit.Gripper.turnToAngle(deposit.openPosition);
-            deposit.V4B.turnToAngle(160);
-        }
-
-        // Complex transfer command
-        if(commandRun) {
-            deposit.Wrist.turnToAngle(241.9);
-            if(deposit.safeTimer.seconds() > 0.5 && deposit.safeTimer.seconds() < 0.8) {
-                deposit.V4B.turnToAngle(deposit.rampPosition);
-            } else if(deposit.safeTimer.seconds() > 0.8 && deposit.safeTimer.seconds() < 1.2) {
-                deposit.Gripper.turnToAngle(deposit.closedPosition);
-            } else if(deposit.safeTimer.seconds() > 1.2 && deposit.safeTimer.seconds() < 2) {
-                commandRun = false;
-                deposit.V4B.turnToAngle(170);
-                intake.openCover();
-            }
-        }
-
 //        lift.run(toolOp.getLeftY());
-//        hang.run(gamepad2);
+//        hang.run(gamepad1);
 
-
-        deposit.manualV4BControl(-toolOp.getRightY(), telemetry);
+        deposit.manualV4BControl(toolOp.getRightY(), telemetry);
+//        deposit.manualSpinControl(toolOp.getLeftY(), telemetry);
 
         telemetry.addData("Wrist Pos", deposit.Wrist.getAngle());
+        telemetry.addData("Spin Pos", deposit.Spin.getAngle());
 
         telemetry.update();
 

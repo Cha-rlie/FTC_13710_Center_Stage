@@ -14,20 +14,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 public class DepositSubsystem extends SubsystemBase {
 
     // Servos
-    public ServoEx Wrist; // Wrist
+    public ServoEx Wrist;
     public ServoEx Gripper;
     public SimpleServo V4B;
     public AnalogInput V4B_Analog;
     public ServoEx Spin;
 
-
-    public MotorGroup DS; // Deposit Slides
-    // Slide positions
-    public int lastSlidePos = 0;
-    public double defaultWrist = 180;
-    public double rampPosition = 131.53;
     public int closedPosition = 150;
     public int openPosition = 30;
+    public int transferGrip = 100;
     public int transferSpin = 27;
     public int flatSpin = 120;
     public ElapsedTime safeTimer = new ElapsedTime();
@@ -49,19 +44,10 @@ public class DepositSubsystem extends SubsystemBase {
         Gripper = new SimpleServo(hardwareMap, "G", 0, 180, AngleUnit.DEGREES);
         Spin = new SimpleServo(hardwareMap, "Spin", 0, 180, AngleUnit.DEGREES);
 
-        V4B.turnToAngle(90);
-
-        Wrist.turnToAngle(defaultWrist);
-        Gripper.turnToAngle(openPosition);
+        V4B.turnToAngle(260);
+        Wrist.turnToAngle(170);
         Spin.turnToAngle(transferSpin);
-
-        ElapsedTime wait = new ElapsedTime();
-        wait.reset();
-
-        while(wait.seconds() < 2) {
-        }
-
-        coverSafeMove();
+        Gripper.turnToAngle(transferGrip);
 
     }
 
@@ -104,11 +90,6 @@ public class DepositSubsystem extends SubsystemBase {
         }
     }
 
-    public void coverSafeMove() {
-        // Moves the deposit if its going to intercept the cover movement
-        if(V4B.getAngle() < 160) { V4B.turnToAngle(160); }
-        if(Wrist.getAngle() < 175) { Wrist.turnToAngle(175); }
-    }
 
     public void place() {
         V4B.turnToAngle(324);

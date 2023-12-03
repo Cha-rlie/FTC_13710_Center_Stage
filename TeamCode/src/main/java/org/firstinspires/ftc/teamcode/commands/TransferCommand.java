@@ -5,16 +5,20 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.hardware.DepositSubsystem;
+import org.firstinspires.ftc.teamcode.hardware.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.hardware.LiftSubsystem;
 
-public class HomeCommand extends CommandBase {
+public class TransferCommand extends CommandBase {
     private final DepositSubsystem deposit;
     private final LiftSubsystem lift;
+    private final IntakeSubsystem intake;
     private ElapsedTime timer;
+    int delay;
 
-    public HomeCommand(DepositSubsystem deposit, LiftSubsystem lift) {
+    public TransferCommand(DepositSubsystem deposit, LiftSubsystem lift, IntakeSubsystem intake) {
         this.deposit = deposit;
         this.lift = lift;
+        this.intake = intake;
         addRequirements(deposit, lift);
     }
 
@@ -23,31 +27,31 @@ public class HomeCommand extends CommandBase {
         timer = new ElapsedTime();
         timer.reset();
 
-        deposit.V4B.turnToAngle(260);
-        deposit.Wrist.turnToAngle(170);
+        deposit.Wrist.turnToAngle(251.5);
         deposit.Spin.turnToAngle(deposit.transferSpin);
-        deposit.grab();
+        deposit.Gripper.turnToAngle(deposit.transferGrip);
     }
 
     @Override
     public void execute() {
-        lift.leftMotor.motor.setTargetPosition(0);
-        lift.rightMotor.motor.setTargetPosition(0);
+        delay = 500;
 
-        lift.leftMotor.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        lift.rightMotor.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        lift.leftMotor.motor.setPower(1);
-        lift.rightMotor.motor.setPower(1);
+        if(timer.milliseconds() > delay && timer.milliseconds() < delay*2) {
+            deposit.V4B.turnToAngle(272);
+        } else if (timer.milliseconds() > delay*2 && timer.milliseconds() < delay*3) {
+            deposit.grab();
+        } else if(timer.milliseconds() > delay*3) {
+            intake.openCover();
+        }
     }
 
     @Override
     public void end(boolean interrupted) {
+        new HomeCommand(deposit, lift).schedule();
     }
 
     @Override
     public boolean isFinished() {
-        if(lift.leftMotor.getCurrentPosition() < 10) { return true; }
-        else return false;
+        return timer.milliseconds() > delay*4;
     }
 }

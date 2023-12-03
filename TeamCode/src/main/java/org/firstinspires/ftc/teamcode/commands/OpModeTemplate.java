@@ -4,6 +4,7 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.hardware.DepositSubsystem;
 import org.firstinspires.ftc.teamcode.hardware.DriveSubsystem;
@@ -43,6 +44,12 @@ abstract public class OpModeTemplate extends CommandOpMode {
 
         drivebase = new DriveSubsystem(hardwareMap);
         deposit = new DepositSubsystem(hardwareMap);
+
+        ElapsedTime wait = new ElapsedTime();
+        wait.reset();
+        while(wait.seconds() < 1) {
+        }
+
         intake = new IntakeSubsystem(hardwareMap, driveOp, telemetry, gamepad1, gamepad2);
         hang = new HangSubsystem(hardwareMap, gamepad2, telemetry);
         shooter = new DroneLauncherSubsystem(hardwareMap);
