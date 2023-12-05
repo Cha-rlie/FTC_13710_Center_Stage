@@ -98,7 +98,6 @@ public class TeleOp extends OpMode {
 
         telemetry.addData("PAR", parallelEncoder.getCurrentPosition());
         telemetry.addData("PER", perpendicularEncoder.getCurrentPosition());
-
         // Run the drivebase with the driveOp gamepad
         driveBase.userControlledDrive(gamepad1, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
 
