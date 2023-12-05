@@ -1,26 +1,33 @@
 package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.hardware.DepositSubsystem;
+import org.firstinspires.ftc.teamcode.hardware.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.hardware.LiftSubsystem;
 
-public class FlattenCommand extends CommandBase {
+public class ScoreCommand extends CommandBase {
     private final DepositSubsystem deposit;
-    private ElapsedTime timer;
+    private final LiftSubsystem lift;
 
-    public FlattenCommand(DepositSubsystem deposit) {
+    SequentialCommandGroup commandGroup;
+
+    public ScoreCommand(DepositSubsystem deposit, LiftSubsystem lift) {
         this.deposit = deposit;
-        addRequirements(deposit);
+        this.lift = lift;
+        addRequirements(deposit, lift);
     }
 
     @Override
     public void initialize() {
-        timer = new ElapsedTime();
-        timer.reset();
-
+        commandGroup = new SequentialCommandGroup(
+                new PlaceCommand(deposit, lift),
+                new FlattenCommand(deposit)
+        );
+        commandGroup.schedule();
 
     }
 
@@ -31,11 +38,10 @@ public class FlattenCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        deposit.Spin.turnToAngle(deposit.flatSpin);
     }
 
     @Override
     public boolean isFinished() {
-        return timer.milliseconds()>1000;
+        return true;
     }
 }

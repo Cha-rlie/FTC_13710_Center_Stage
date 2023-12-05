@@ -24,10 +24,11 @@ public class TransferCommand extends CommandBase {
 
     @Override
     public void initialize() {
+        deposit.currentlyTransfering = true;
         timer = new ElapsedTime();
         timer.reset();
 
-        deposit.Wrist.turnToAngle(251.5);
+        deposit.Wrist.turnToAngle(251);
         deposit.Spin.turnToAngle(deposit.transferSpin);
         deposit.Gripper.turnToAngle(deposit.transferGrip);
     }
@@ -36,8 +37,17 @@ public class TransferCommand extends CommandBase {
     public void execute() {
         delay = 500;
 
+        lift.leftMotor.motor.setTargetPosition(-10);
+        lift.rightMotor.motor.setTargetPosition(-10);
+
+        lift.leftMotor.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lift.rightMotor.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        lift.leftMotor.motor.setPower(1);
+        lift.rightMotor.motor.setPower(1);
+
         if(timer.milliseconds() > delay && timer.milliseconds() < delay*2) {
-            deposit.V4B.turnToAngle(272);
+            deposit.V4B.turnToAngle(270);
         } else if (timer.milliseconds() > delay*2 && timer.milliseconds() < delay*3) {
             deposit.grab();
         } else if(timer.milliseconds() > delay*3) {
@@ -47,7 +57,8 @@ public class TransferCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        new HomeCommand(deposit, lift).schedule();
+        deposit.currentlyTransfering = false;
+        deposit.V4B.turnToAngle(225);
     }
 
     @Override

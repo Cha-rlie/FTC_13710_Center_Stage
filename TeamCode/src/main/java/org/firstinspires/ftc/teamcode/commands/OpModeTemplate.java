@@ -47,7 +47,7 @@ abstract public class OpModeTemplate extends CommandOpMode {
 
         ElapsedTime wait = new ElapsedTime();
         wait.reset();
-        while(wait.seconds() < 1) {
+        while(wait.seconds() < 2) {
         }
 
         intake = new IntakeSubsystem(hardwareMap, driveOp, telemetry, gamepad1, gamepad2);

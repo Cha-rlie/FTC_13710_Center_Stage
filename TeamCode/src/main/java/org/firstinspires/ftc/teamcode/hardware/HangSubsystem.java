@@ -46,7 +46,7 @@ public class HangSubsystem extends SubsystemBase {
                 Hang.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
                 Hang.motor.setPower(power);
-                HangPusher.setPower(-power);
+                HangPusher.setPower(-1);
 
             } else if (gamepad2.touchpad_finger_1_y < -0.1) {
                 Hang.motor.setTargetPosition((int) targetPos);

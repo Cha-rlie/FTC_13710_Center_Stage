@@ -22,10 +22,14 @@ public class DepositSubsystem extends SubsystemBase {
 
     public int closedPosition = 150;
     public int openPosition = 30;
-    public int transferGrip = 100;
+    public int transferGrip = 80;
     public int transferSpin = 27;
-    public int flatSpin = 120;
-    public ElapsedTime safeTimer = new ElapsedTime();
+    public int flatSpin = transferSpin+90;
+    public boolean outtaking;
+    public boolean currentlyPlacing;
+    public boolean currentlyHoming;
+    public boolean currentlyTransfering;
+
 
     public DepositSubsystem(HardwareMap hardwareMap) {
         // Assign variables here with parameters
@@ -44,12 +48,22 @@ public class DepositSubsystem extends SubsystemBase {
         Gripper = new SimpleServo(hardwareMap, "G", 0, 180, AngleUnit.DEGREES);
         Spin = new SimpleServo(hardwareMap, "Spin", 0, 180, AngleUnit.DEGREES);
 
-        V4B.turnToAngle(260);
+        V4B.turnToAngle(240);
         Wrist.turnToAngle(170);
         Spin.turnToAngle(transferSpin);
         Gripper.turnToAngle(transferGrip);
+        outtaking = false;
 
     }
+
+    @Override
+    public void periodic() {
+        if(outtaking) {
+            double difference = V4B.getAngle() - 60;
+            Wrist.turnToAngle(180-difference);
+        }
+    }
+
 
     public double getV4BPos() {
         return(V4B_Analog.getVoltage() / 3.3 * 360);
@@ -65,7 +79,7 @@ public class DepositSubsystem extends SubsystemBase {
     }
 
     public void manualWristControl(double angle, Telemetry telemetry) {
-        int scaling = 5;
+        int scaling = 10;
 
         Wrist.rotateByAngle(-angle  * scaling);
 

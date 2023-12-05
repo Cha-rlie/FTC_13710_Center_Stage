@@ -17,6 +17,8 @@ public class SlideModel {
     public static double MAXWRISTANGLE = Math.toRadians(270); //degrees
     public static double MINWRISTANGLE = Math.toRadians(0); //degrees
     public static double WRISTANGLE = Math.toRadians(-30); //degrees
+
+    public static double BUFFER = 0.05; // Amount of room at top of touchpad
     public static double MAXPOSITION = MAXEXTENSION + ARMLENGTH;
 
 
@@ -40,8 +42,6 @@ public class SlideModel {
      * @return
      */
     public double[] inverseKinematics(int targetX, int targetY) {
-        System.out.println("Target X: " + targetX);
-        System.out.println("Target Y: " + targetY);
         int tx = targetX - (int)(Math.cos(WRISTANGLE)*WRISTLENGTH); // Adjusts for static wrist angle (essentially removes wrist from equation)
         double ty = targetY - (int)(Math.sin(WRISTANGLE)*WRISTLENGTH);
         if(Math.atan2(ty, tx) > SLIDEANGLE) return null;

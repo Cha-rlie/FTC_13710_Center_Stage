@@ -7,6 +7,7 @@ import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.FlattenCommand;
@@ -44,38 +45,17 @@ public class LiftSubsystem extends SubsystemBase {
         rightMotor.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         top = slideModel.MAXENCODER;
+
     }
+
 
     @Override
     public void periodic() {
-        double power = 1;
-        if(gamepad2.touchpad_finger_1 && gamepad2.touchpad_finger_2) {
-            deposit.release();
-        } else if(gamepad2.touchpad_finger_1) {
-            int[] realWorldLoc = slideModel.convertInputToLocation(gamepad2.touchpad_finger_1_x, gamepad2.touchpad_finger_1_y, telemetry);
 
-            double[] liftValues = slideModel.inverseKinematics(realWorldLoc[0], realWorldLoc[1]);
+    }
 
-            if(liftValues != null) {
-                leftMotor.motor.setTargetPosition((int) liftValues[0]);
-                rightMotor.motor.setTargetPosition((int) liftValues[0]);
+    public void autoStabilize() {
 
-                leftMotor.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                rightMotor.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                leftMotor.motor.setPower(power);
-                rightMotor.motor.setPower(power);
-
-                double armPosition = Math.toDegrees(liftValues[1]) + 90;
-                telemetry.addData("Desired Arm Pos: ", armPosition);
-                deposit.V4B.turnToAngle(armPosition);
-
-                double difference = deposit.V4B.getAngle() - 60;
-                deposit.Wrist.turnToAngle(180-difference);
-
-                new FlattenCommand(deposit).schedule();
-            }
-        }
     }
 
     public void run(double joystick) {
@@ -88,12 +68,18 @@ public class LiftSubsystem extends SubsystemBase {
         leftMotor.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightMotor.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        leftMotor.motor.setPower(Math.abs(joystick));
-        rightMotor.motor.setPower(Math.abs(joystick));
+        double motorPowers = Range.clip(Math.abs(joystick), 0.2, 1);
 
+        telemetry.addData("Slide Power", motorPowers);
+
+        leftMotor.motor.setPower(motorPowers);
+        rightMotor.motor.setPower(motorPowers);
     }
 
-    public int target(double joystick) { if(joystick > 0) return top; else return 0; };
+    public int target(double joystick) {
+        if(joystick > 0) return top;
+        else if(joystick == 0) return leftMotor.motor.getCurrentPosition();
+        else return 0; };
 
     public double getPosition(){
         return leftMotor.getCurrentPosition();

@@ -5,14 +5,17 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.hardware.DepositSubsystem;
+import org.firstinspires.ftc.teamcode.hardware.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.hardware.LiftSubsystem;
 
-public class HomeCommand extends CommandBase {
+public class PlaceCommand extends CommandBase {
     private final DepositSubsystem deposit;
     private final LiftSubsystem lift;
     private ElapsedTime timer;
+    int elevation;
+    int delay;
 
-    public HomeCommand(DepositSubsystem deposit, LiftSubsystem lift) {
+    public PlaceCommand(DepositSubsystem deposit, LiftSubsystem lift) {
         this.deposit = deposit;
         this.lift = lift;
         addRequirements(deposit, lift);
@@ -20,21 +23,21 @@ public class HomeCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        deposit.currentlyHoming = true;
+        deposit.currentlyPlacing = true;
         timer = new ElapsedTime();
         timer.reset();
 
-        deposit.V4B.turnToAngle(260);
-        deposit.Wrist.turnToAngle(170);
-        deposit.Spin.turnToAngle(deposit.transferSpin);
-        deposit.grab();
-        deposit.outtaking = false;
+        //deposit.V4B.turnToAngle(126);
+        deposit.V4B.turnToAngle(110);
+        deposit.outtaking = true;
     }
 
     @Override
     public void execute() {
-        lift.leftMotor.motor.setTargetPosition(0);
-        lift.rightMotor.motor.setTargetPosition(0);
+        elevation = 100;
+
+        lift.leftMotor.motor.setTargetPosition(elevation);
+        lift.rightMotor.motor.setTargetPosition(elevation);
 
         lift.leftMotor.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         lift.rightMotor.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -45,12 +48,12 @@ public class HomeCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        deposit.currentlyHoming = false;
+        deposit.currentlyPlacing = false;
     }
 
     @Override
     public boolean isFinished() {
-        if(lift.leftMotor.getCurrentPosition() < 10) { return true; }
+        if(lift.leftMotor.getCurrentPosition() > elevation-10) { return true; }
         else return false;
     }
 }
