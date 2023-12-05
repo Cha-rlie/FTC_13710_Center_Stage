@@ -119,16 +119,7 @@ public class FrontAutoParent {
                 .turn(-30*alianceAdjustor)
                 .build();
 
-        driveToBackdrop = driveBase.trajectorySequenceBuilder(chosenTeamPropScoringLocationTrajectory.end())
-                // Uncomment the top line to allow the robot to re-orientate it's angle to how it started to avoid bizare splines, etc.
-                // If this is done, make sure to change the next line's heading to startHeading
-                //.turn(-1*(chosenTeamPropScoringLocationTrajectory.end().getHeading()-startHeading))
-                .splineToConstantHeading(new Vector2d(0+startX, (-33*alianceAdjustor)+startY), Math.toRadians(driveBase.getPoseEstimate().getHeading()))
-                .turn(Math.toRadians(90*alianceAdjustor))
-                .splineToConstantHeading(new Vector2d(0+startX, (-35*alianceAdjustor)+startY), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(41+startX, (-35*alianceAdjustor)+startY), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(65+startX,(-15*alianceAdjustor)+startY), Math.toRadians(180))
-                .build();
+
 
         driveToNextAprilTag = driveBase.trajectorySequenceBuilder(driveBase.getPoseEstimate())
                 .lineToConstantHeading(new Vector2d(driveBase.getPoseEstimate().getX(), driveBase.getPoseEstimate().getY()+(12*alianceAdjustor)))
@@ -173,6 +164,17 @@ public class FrontAutoParent {
         }
         // Position the robot so that it is prepared to score the pixel
         driveBase.followTrajectorySequence(chosenTeamPropScoringLocationTrajectory);
+
+        driveToBackdrop = driveBase.trajectorySequenceBuilder(chosenTeamPropScoringLocationTrajectory.end())
+                // Uncomment the top line to allow the robot to re-orientate it's angle to how it started to avoid bizare splines, etc.
+                // If this is done, make sure to change the next line's heading to startHeading
+                //.turn(-1*(chosenTeamPropScoringLocationTrajectory.end().getHeading()-startHeading))
+                .splineToConstantHeading(new Vector2d(0+startX, (-33*alianceAdjustor)+startY), Math.toRadians(driveBase.getPoseEstimate().getHeading()))
+                .turn(Math.toRadians(90*alianceAdjustor))
+                .splineToConstantHeading(new Vector2d(0+startX, (-35*alianceAdjustor)+startY), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(41+startX, (-35*alianceAdjustor)+startY), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(65+startX,(-15*alianceAdjustor)+startY), Math.toRadians(180))
+                .build();
     }
 
     /**
