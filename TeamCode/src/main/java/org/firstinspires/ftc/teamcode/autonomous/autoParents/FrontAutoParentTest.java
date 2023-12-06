@@ -1,34 +1,29 @@
 package org.firstinspires.ftc.teamcode.autonomous.autoParents;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-// Import Vision Related Classes
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.openftc.easyopencv.OpenCvCamera;
-
-// Import RoadRunner Classes
-import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
-import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-
-// Import Custom Vision Classes
+import org.firstinspires.ftc.teamcode.autonomous.aprilTagDetection.AprilTagCameraDetector;
 import org.firstinspires.ftc.teamcode.autonomous.propLocationDetection.propLocationDetector;
 import org.firstinspires.ftc.teamcode.autonomous.propLocationDetection.propLocationDetector.Locations;
-import org.firstinspires.ftc.teamcode.autonomous.aprilTagDetection.AprilTagCameraDetector;
+import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
+import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
+import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 
-public class FrontAutoParent {
+public class FrontAutoParentTest {
 
     // Declare Template-Related Variables
     String ALIANCE_COLOR;
 
     // Declare Prop Location-Related Variables
-    public propLocationDetector propLocationDetector;
+    propLocationDetector propLocationDetector;
     public Locations propLocation;
     WebcamName propCamera;
 
@@ -58,7 +53,7 @@ public class FrontAutoParent {
     TrajectorySequence driveToBackdrop;
     TrajectorySequence driveToRightParkingLocationTrajectory;
 
-    public FrontAutoParent(HardwareMap hardwareMap, String alianceColour) {
+    public FrontAutoParentTest(HardwareMap hardwareMap, String alianceColour) {
         ALIANCE_COLOR = alianceColour;
 
         if (ALIANCE_COLOR.equals("BLUE")) {
@@ -68,8 +63,6 @@ public class FrontAutoParent {
             tagsToSearchFor = new int[]{4, 5, 6};
             alianceAdjustor = -1;
         }
-
-        alianceAdjustor = 1;
 
         // Assign and set-up the RoadRunner Mecanum Drive
         driveBase = new SampleMecanumDrive(hardwareMap);
@@ -89,7 +82,7 @@ public class FrontAutoParent {
      * @param hardwareMap OpMode's Hardwaremap
      * @param telemetry OpMode's Telemetry
      */
-    public Locations detectProp (HardwareMap hardwareMap, Telemetry telemetry, int timeToDetectFor) {
+    public void detectProp (HardwareMap hardwareMap, Telemetry telemetry, int timeToDetectFor) {
         telemetry.addData("aliance adjustor", alianceAdjustor);
         // Set up the TensorFlow Prop Detector
         propCamera = hardwareMap.get(WebcamName.class, "Webcam");
@@ -97,8 +90,6 @@ public class FrontAutoParent {
 
         // Detect the Team Prop's Location
         propLocation = propLocationDetector.detectPropLocation(telemetry, timeToDetectFor);
-
-        return propLocation;
 
     }
 
@@ -112,37 +103,37 @@ public class FrontAutoParent {
         telemetry.update();
         // TrajectorySequences to position the robot for scoring the purple pixel with the team prop
         driveToLeftTeamPropScoringPosition = driveBase.trajectorySequenceBuilder(driveBase.getPoseEstimate())
-                .lineToConstantHeading(new Vector2d(startX, startY+(-15*alianceAdjustor)))
-                .turn(Math.toRadians(30*alianceAdjustor))
+                .lineToConstantHeading(new Vector2d(startX, startY-15))
+                .turn(Math.toRadians(30))
                 .build();
         driveToFrontTeamPropScoringPosition = driveBase.trajectorySequenceBuilder(driveBase.getPoseEstimate())
-                .lineToConstantHeading(new Vector2d(startX, startY+(-25*alianceAdjustor)))
+                .lineToConstantHeading(new Vector2d(startX, startY-25))
                 .turn(Math.toRadians(180))
                 .build();
         driveToRightTeamPropScoringPosition = driveBase.trajectorySequenceBuilder(driveBase.getPoseEstimate())
-                .lineToConstantHeading(new Vector2d(startX, startY+(-15*alianceAdjustor)))
-                .turn(Math.toRadians(-30*alianceAdjustor))
+                .lineToConstantHeading(new Vector2d(startX, startY-15))
+                .turn(Math.toRadians(-30))
                 .build();
 
         driveToNextAprilTag = driveBase.trajectorySequenceBuilder(driveBase.getPoseEstimate())
-                .lineToConstantHeading(new Vector2d(driveBase.getPoseEstimate().getX(), driveBase.getPoseEstimate().getY()+(12*alianceAdjustor)))
+                .lineToConstantHeading(new Vector2d(driveBase.getPoseEstimate().getX(), driveBase.getPoseEstimate().getY()+12))
                 .build();
 
         driveToPixelStacksTrajectory = driveBase.trajectorySequenceBuilder(driveBase.getPoseEstimate())
-                .splineToConstantHeading(new Vector2d(10+startX, (-33*alianceAdjustor)+startY), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(-20+startX, (-33*alianceAdjustor)+startY), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(-43+startX, (-33*alianceAdjustor)+startY), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(10+startX, -33+startY), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(-20+startX, -33+startY), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(-43+startX, -33+startY), Math.toRadians(180))
                 .build();
 
         driveBackToBackDrop = driveBase.trajectorySequenceBuilder(driveToPixelStacksTrajectory.end())
-                .splineToConstantHeading(new Vector2d(-20+startX, (-33*alianceAdjustor)+startY), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(10+startX, (-34*alianceAdjustor)+startY), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(35+startX, (-3*alianceAdjustor)+startY), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(-20+startX, -33+startY), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(10+startX, -34+startY), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(35+startX, -3+startY), Math.toRadians(180))
                 //.lineToConstantHeading(new Vector2d(60+startX, -15+startY))
                 .build();
 
         driveToRightParkingLocationTrajectory = driveBase.trajectorySequenceBuilder(driveBackToBackDrop.end())
-                .lineToConstantHeading(new Vector2d(driveBase.getPoseEstimate().getX(), driveBase.getPoseEstimate().getY()+(-28*alianceAdjustor)))
+                .lineToConstantHeading(new Vector2d(driveBase.getPoseEstimate().getX(), driveBase.getPoseEstimate().getY()-28))
                 .back(17)
                 //.splineToConstantHeading(new Vector2d(55+startX, -40+startY), Math.toRadians(180))
                 .build();

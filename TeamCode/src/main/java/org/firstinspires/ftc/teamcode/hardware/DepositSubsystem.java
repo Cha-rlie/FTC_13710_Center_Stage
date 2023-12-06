@@ -20,7 +20,7 @@ public class DepositSubsystem extends SubsystemBase {
     public AnalogInput V4B_Analog;
     public ServoEx Spin;
 
-    public int closedPosition = 150;
+    public int closedPosition = 140;
     public int openPosition = 30;
     public int transferGrip = 80;
     public int transferSpin = 27;
@@ -79,7 +79,7 @@ public class DepositSubsystem extends SubsystemBase {
     }
 
     public void manualWristControl(double angle, Telemetry telemetry) {
-        int scaling = 10;
+        int scaling = 5;
 
         Wrist.rotateByAngle(-angle  * scaling);
 

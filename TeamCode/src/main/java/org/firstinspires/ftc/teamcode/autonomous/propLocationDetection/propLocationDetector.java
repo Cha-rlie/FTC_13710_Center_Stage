@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonomous.propLocationDetection;
 
+import android.util.Size;
+
 import com.arcrobotics.ftclib.util.Timing;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -24,7 +26,7 @@ public class propLocationDetector {
     // Variables for state management
     public enum Locations {LEFT, FRONT, RIGHT, NOT_FOUND}
     private Locations detectedSide = Locations.NOT_FOUND;
-    private Boolean currentlyDetecting = true;
+    public Boolean currentlyDetecting = true;
 
     public propLocationDetector(WebcamName webcam, String alianceColor) {
         if (alianceColor.equals("BLUE")) {
@@ -42,6 +44,7 @@ public class propLocationDetector {
         visionPortal = new VisionPortal.Builder()
                 .setCamera(webcam)
                 .setCamera(BuiltinCameraDirection.BACK)
+                .setCameraResolution(new Size(1280, 720))
                 .enableLiveView(true)
                 //.setStreamFormat(VisionPortal.StreamFormat.YUY2)
                 .setAutoStopLiveView(false)
@@ -57,8 +60,13 @@ public class propLocationDetector {
         while (!detectionTimer.done() && currentlyDetecting) {
 
             List<Recognition> currentRecognitions = tfod.getRecognitions();
+            telemetry.addData("Time Remaining", detectionTimer.remainingTime());
+            telemetry.addData("Prop Location", detectedSide);
             telemetry.addData("Current Recognitions", currentRecognitions);
             telemetry.addData("# of Objects Detected", currentRecognitions.size());
+
+            // Start the detectside as the left, so that if nothing is found, it will return left
+            detectedSide = Locations.LEFT;
 
             // Step through the list of recognitions and display info for each one.
             if (currentRecognitions.size() == 1) {
@@ -74,22 +82,21 @@ public class propLocationDetector {
 
                 // Check which third of the camera frame the recognition was in
                 // From this, estimate the prop location
-                if (x < 430) {
-                    detectedSide = Locations.LEFT;
-                } else if (x > 850) {
-                    detectedSide = Locations.RIGHT;
-                } else {
+                if (x < 640) {
                     detectedSide = Locations.FRONT;
+                } else {
+                    detectedSide = Locations.RIGHT;
                 }
 
-                telemetry.addData("Time Remaining", detectionTimer.remainingTime());
-                telemetry.addData("Prop Location", detectedSide);
                 telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
                 telemetry.addData("- Position", "%.0f / %.0f", x, y);
                 telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
+                telemetry.update();
             }
             telemetry.update();
         }
+        telemetry.addData("Detected Side", detectedSide);
+        telemetry.update();
         return detectedSide;
     }
 //        while (currentlyDetecting && !detectionTimer.done()) {

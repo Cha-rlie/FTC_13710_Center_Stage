@@ -71,7 +71,7 @@ public class BackAutoParent {
 
         // Assign and set-up the RoadRunner Mecanum Drive
         driveBase = new SampleMecanumDrive(hardwareMap);
-        startX = -37;
+        startX = 37;
         startY = 60*alianceAdjustor;
         startHeading = 90*alianceAdjustor;
         driveBase.setPoseEstimate(new Pose2d(startX, startY, Math.toRadians(startHeading)));
@@ -222,23 +222,35 @@ public class BackAutoParent {
      */
     public void complexAuto(HardwareMap hardwareMap, Telemetry telemetry) {
         // Place the purple pixel in the correct location
+        telemetry.addLine("Moving to Scoring Position...");
+        telemetry.update();
         positionRobotToScorePurplePixel();
         // TODO: Use Hardware functions to SCORE here
         // Drive to BackDrop
+        telemetry.addLine("Driving to Backdrop...");
+        telemetry.update();
         driveBase.followTrajectorySequence(driveToBackdrop);
         // Drive to the correct AprilTag Location
+        telemetry.addLine("Generating Trajectory Sequences Now...");
+        telemetry.update();
         moveToCorrectLocationWithAprilTags(hardwareMap, telemetry);
         // Score the yellow pixel
         // TODO: Use Hardware functions to SCORE here
         // Drive to the rightmost pixel stack
+        telemetry.addLine("Drive to Pixel Stacks...");
+        telemetry.update();
         driveBase.followTrajectorySequence(driveToPixelStacksTrajectory);
         // Intake 2 pixels
         // TODO: Use Hardware functions to INTAKE here
         // Drive back to the backdrop
+        telemetry.addLine("Drive Back to Backdrop...");
+        telemetry.update();
         driveBase.followTrajectorySequence(driveBackToBackDrop);
         // Score the pixels
         // TODO: Use Hardware functions to SCORE here
         // Drive and park in the parking location on the right of the backdrop
+        telemetry.addLine("Parking...");
+        telemetry.update();
         driveBase.followTrajectorySequence(driveToRightParkingLocationTrajectory);
 
     }

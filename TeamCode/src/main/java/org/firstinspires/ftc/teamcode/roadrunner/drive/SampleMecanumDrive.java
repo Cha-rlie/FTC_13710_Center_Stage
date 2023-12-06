@@ -55,8 +55,8 @@ import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.kV;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 18); //Old: (8, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 6); //Old: (8, 0, 0); //0, 0, 0
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(4, 0, 0); //Old: (8, 0, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(15, 0, 0); //Old: (8, 0, 0); //0, 0, 0
 
     public static double LATERAL_MULTIPLIER = 4.1; //Old: 1.2307692308; // Tuned with Strafe Test; Originally 1;
 

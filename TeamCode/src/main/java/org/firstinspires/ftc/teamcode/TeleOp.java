@@ -61,6 +61,10 @@ public class TeleOp extends OpModeTemplate {
         hang.run(gamepad2);
 
         deposit.manualV4BControl(toolOp.getRightY(), telemetry);
+        // TODO: Delete Later
+//        deposit.manualWristControl(toolOp.getLeftY(), telemetry);
+
+        telemetry.addData("Wrist Position", deposit.Wrist.getAngle());
 
         telemetry.addData("Slide position", lift.leftMotor.motor.getCurrentPosition());
 
