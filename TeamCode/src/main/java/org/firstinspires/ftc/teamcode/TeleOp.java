@@ -37,9 +37,11 @@ public class TeleOp extends OpModeTemplate {
 
         new GamepadButton(toolOp, GamepadKeys.Button.LEFT_BUMPER).whenPressed(() -> deposit.mosaicSpin(1, telemetry)).whenReleased(() -> deposit.mosaicSpin(0, telemetry));
         new GamepadButton(toolOp, GamepadKeys.Button.RIGHT_BUMPER).whenPressed(() -> deposit.mosaicSpin(-1, telemetry)).whenReleased(() -> deposit.mosaicSpin(0, telemetry));
+        new GamepadButton(toolOp, GamepadKeys.Button.DPAD_UP).whenPressed(() -> lift.liftOffset += 10);
+        new GamepadButton(toolOp, GamepadKeys.Button.DPAD_DOWN).whenPressed(() -> lift.liftOffset += -10);
 
-        new GamepadButton(toolOp, GamepadKeys.Button.DPAD_UP).whenPressed(() -> deposit.manualWristControl(1, telemetry));
-        new GamepadButton(toolOp, GamepadKeys.Button.DPAD_DOWN).whenPressed(() -> deposit.manualWristControl(-1, telemetry));
+        new GamepadButton(toolOp, GamepadKeys.Button.DPAD_LEFT).whenPressed(() -> deposit.manualWristControl(1, telemetry));
+        new GamepadButton(toolOp, GamepadKeys.Button.DPAD_RIGHT).whenPressed(() -> deposit.manualWristControl(-1, telemetry));
 
         new RightTriggerReader(toolOp, driveOp).whenActive(intake::spin).whenInactive(intake::stop);
         new LeftTriggerReader(toolOp, driveOp).whenActive(intake::Rspin).whenInactive(intake::stop);

@@ -24,7 +24,7 @@ public class LiftSubsystem extends SubsystemBase {
     Gamepad gamepad2;
 
     public static int top;
-    public double liftOffset = 0;
+    public int liftOffset = 0;
 
 
     public LiftSubsystem(HardwareMap hMap, Telemetry telemetry, Gamepad gamepad2, DepositSubsystem deposit, LiftSubsystem lift){
@@ -77,11 +77,49 @@ public class LiftSubsystem extends SubsystemBase {
     }
 
     public int target(double joystick) {
-        if(joystick > 0) return top;
+        if(joystick > 0) return top+liftOffset;
         else if(joystick == 0) return leftMotor.motor.getCurrentPosition();
-        else return 0; };
+        else return 0+liftOffset; };
 
     public double getPosition(){
         return leftMotor.getCurrentPosition();
+    }
+
+    public boolean autoRun() {
+        int target = 250;
+        while(getPosition() < target-10) {
+            leftMotor.motor.setTargetPosition(target);
+            rightMotor.motor.setTargetPosition(target);
+
+            leftMotor.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rightMotor.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            leftMotor.motor.setPower(1);
+            rightMotor.motor.setPower(1);
+        }
+        return true;
+    }
+
+    public boolean autoHome() {
+        int target = 0;
+        deposit.V4B.turnToAngle(260);
+        deposit.Wrist.turnToAngle(170);
+        deposit.Spin.turnToAngle(deposit.transferSpin);
+        deposit.grab();
+        deposit.outtaking = false;
+
+        while(getPosition() > target+10) {
+            leftMotor.motor.setTargetPosition(target);
+            rightMotor.motor.setTargetPosition(target);
+
+            leftMotor.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rightMotor.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            leftMotor.motor.setPower(1);
+            rightMotor.motor.setPower(1);
+        }
+
+        return(true);
+
     }
 }

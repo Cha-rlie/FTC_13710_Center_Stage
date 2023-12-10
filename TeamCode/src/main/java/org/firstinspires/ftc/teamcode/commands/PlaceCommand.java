@@ -34,7 +34,7 @@ public class PlaceCommand extends CommandBase {
 
     @Override
     public void execute() {
-        elevation = 100;
+        elevation = 100+ lift.liftOffset;
 
         lift.leftMotor.motor.setTargetPosition(elevation);
         lift.rightMotor.motor.setTargetPosition(elevation);

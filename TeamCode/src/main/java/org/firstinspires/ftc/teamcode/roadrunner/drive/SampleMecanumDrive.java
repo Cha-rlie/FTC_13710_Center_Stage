@@ -55,8 +55,8 @@ import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.kV;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(4, 0, 0); //Old: (8, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(15, 0, 0); //Old: (8, 0, 0); //0, 0, 0
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(5, 0, 0); //Old: (8, 0, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(6, 0, 0); //Old: (8, 0, 0); //0, 0, 0
 
     public static double LATERAL_MULTIPLIER = 4.1; //Old: 1.2307692308; // Tuned with Strafe Test; Originally 1;
 
@@ -84,7 +84,8 @@ public class SampleMecanumDrive extends MecanumDrive {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
 
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
-                new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
+                new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.8); // Time it takes to get precise location
+
 
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
 

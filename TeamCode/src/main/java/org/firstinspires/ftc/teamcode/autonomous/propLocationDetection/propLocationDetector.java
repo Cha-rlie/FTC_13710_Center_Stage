@@ -29,6 +29,7 @@ public class propLocationDetector {
     public Boolean currentlyDetecting = true;
 
     public propLocationDetector(WebcamName webcam, String alianceColor) {
+
         if (alianceColor.equals("BLUE")) {
             TFOD_MODEL_ASSET = "Blue_Team_Prop_Detector_Model.tflite";
         } else {
@@ -52,50 +53,40 @@ public class propLocationDetector {
                 .build();
     }
 
-    public Locations detectPropLocation(Telemetry telemetry, int timeToDetectFor) {
+    public Locations detectPropLocation(Telemetry telemetry, Locations lastKnownLocation) {
         visionPortal.resumeStreaming();
         visionPortal.resumeLiveView();
-        detectionTimer = new Timing.Timer(timeToDetectFor, TimeUnit.SECONDS);
-        detectionTimer.start();
-        while (!detectionTimer.done() && currentlyDetecting) {
 
-            List<Recognition> currentRecognitions = tfod.getRecognitions();
-            telemetry.addData("Time Remaining", detectionTimer.remainingTime());
-            telemetry.addData("Prop Location", detectedSide);
-            telemetry.addData("Current Recognitions", currentRecognitions);
-            telemetry.addData("# of Objects Detected", currentRecognitions.size());
+        List<Recognition> currentRecognitions = tfod.getRecognitions();
 
-            // Start the detectside as the left, so that if nothing is found, it will return left
-            detectedSide = Locations.LEFT;
+        // Start the detectside as the left, so that if nothing is found, it will return left
+        detectedSide = lastKnownLocation;
 
-            // Step through the list of recognitions and display info for each one.
-            if (currentRecognitions.size() == 1) {
-                // Stop trying to detect the object once a detection has occurec
-                currentlyDetecting = false;
+        // Step through the list of recognitions and display info for each one.
+        if (currentRecognitions.size() == 1) {
+            // Stop trying to detect the object once a detection has occurec
+            currentlyDetecting = false;
 
-                // Create a local, temporary variable to hold the recognition
-                Recognition recognition = currentRecognitions.get(0);
+            // Create a local, temporary variable to hold the recognition
+            Recognition recognition = currentRecognitions.get(0);
 
-                // Get the x and y coordinates of the recognition
-                double x = (recognition.getLeft() + recognition.getRight()) / 2;
-                double y = (recognition.getTop() + recognition.getBottom()) / 2;
+            // Get the x and y coordinates of the recognition
+            double x = (recognition.getLeft() + recognition.getRight()) / 2;
+            double y = (recognition.getTop() + recognition.getBottom()) / 2;
 
-                // Check which third of the camera frame the recognition was in
-                // From this, estimate the prop location
-                if (x < 640) {
-                    detectedSide = Locations.FRONT;
-                } else {
-                    detectedSide = Locations.RIGHT;
-                }
-
-                telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
-                telemetry.addData("- Position", "%.0f / %.0f", x, y);
-                telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
-                telemetry.update();
+            // Check which third of the camera frame the recognition was in
+            // From this, estimate the prop location
+            if (x < 640) {
+                detectedSide = Locations.FRONT;
+            } else {
+                detectedSide = Locations.RIGHT;
             }
+
+//            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
+//            telemetry.addData("- Position", "%.0f / %.0f", x, y);
+//            telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
             telemetry.update();
         }
-        telemetry.addData("Detected Side", detectedSide);
         telemetry.update();
         return detectedSide;
     }

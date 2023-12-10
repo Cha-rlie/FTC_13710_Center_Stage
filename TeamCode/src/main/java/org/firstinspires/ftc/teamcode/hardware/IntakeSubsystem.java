@@ -38,7 +38,7 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeSpinner.setRunMode(Motor.RunMode.RawPower);
         intakeSpinner.setInverted(false);
 
-        is = hardwareMap.get(ColorRangeSensor.class, "is");
+        //is = hardwareMap.get(ColorRangeSensor.class, "is");
 
         IntakeCover = new SimpleServo(hardwareMap, "I", 0, 260, AngleUnit.DEGREES);
 
@@ -49,16 +49,16 @@ public class IntakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        telemetry.addData("Color Sensor Distance: ", is.getDistance(DistanceUnit.MM));
-        int threshold = 30;
-
-        if(is.getDistance(DistanceUnit.MM) < threshold && !driversAlerted) {
-            gamepad1.rumble(800);
-            gamepad2.rumble(800);
-            driversAlerted = true;
-        } else if (is.getDistance(DistanceUnit.MM) > threshold) {
-            driversAlerted = false;
-        }
+//        telemetry.addData("Color Sensor Distance: ", is.getDistance(DistanceUnit.MM));
+//        int threshold = 30;
+//
+//        if(is.getDistance(DistanceUnit.MM) < threshold && !driversAlerted) {
+//            gamepad1.rumble(800);
+//            gamepad2.rumble(800);
+//            driversAlerted = true;
+//        } else if (is.getDistance(DistanceUnit.MM) > threshold) {
+//            driversAlerted = false;
+//        }
     }
 
     public void spin() {

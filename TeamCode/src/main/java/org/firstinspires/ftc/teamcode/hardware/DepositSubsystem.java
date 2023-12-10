@@ -60,7 +60,7 @@ public class DepositSubsystem extends SubsystemBase {
     public void periodic() {
         if(outtaking) {
             double difference = V4B.getAngle() - 60;
-            Wrist.turnToAngle(180-difference);
+            Wrist.turnToAngle(190-difference);
         }
     }
 
@@ -79,7 +79,7 @@ public class DepositSubsystem extends SubsystemBase {
     }
 
     public void manualWristControl(double angle, Telemetry telemetry) {
-        int scaling = 5;
+        int scaling = 10;
 
         Wrist.rotateByAngle(-angle  * scaling);
 

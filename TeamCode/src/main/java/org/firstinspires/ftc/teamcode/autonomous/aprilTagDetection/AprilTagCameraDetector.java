@@ -21,6 +21,8 @@
 
 package org.firstinspires.ftc.teamcode.autonomous.aprilTagDetection;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
